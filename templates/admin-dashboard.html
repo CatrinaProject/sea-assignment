@@ -2,18 +2,28 @@
 
 {% block body %}
 
-<h2>Pending Users</h2>
+<h2>Admin Approvals</h2>
 <form method="post">
     <ul>
         {% for user in pending_users %}
             <li>
-                <input type="radio" name="{{ user[1] }}" value="approve"> Approve
-                <input type="radio" name="{{ user[1] }}" value="reject"> Reject
-                Username: {{ user[1] }}
+                {{ user[1] }}
+                <input type="checkbox" name="approve_user" value="{{ user[1] }}"> Approve
             </li>
         {% endfor %}
     </ul>
     <button type="submit">Submit</button>
+</form>
+
+<h2>Admins</h2>
+<form method="post">
+    <ul>
+        {% for user in admins %}
+            <li>
+                {{ user[1] }}
+            </li>
+        {% endfor %}
+    </ul>
 </form>
 
 {% endblock %}

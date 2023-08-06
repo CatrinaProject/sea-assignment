@@ -1,5 +1,5 @@
 import sqlite3
-from flask import Flask, redirect, render_template, request, session
+from flask import Flask, redirect, render_template, request, session, flash
 
 
 def register_user_to_db(username, password):
@@ -67,16 +67,55 @@ def home():
         return render_template('home.html', username=session['username'])
     else:
         return render_template('login-failed.html')
+    
+def is_admin():
+    if 'username' in session:
+        username = session['username']
+        con = sqlite3.connect('sea-assignment/database.db')
+        cur = con.cursor()
+        cur.execute("SELECT user_type FROM users WHERE username = ?", (username,))
+        user_type = cur.fetchone()
+        con.close()
+        if user_type and user_type[0] == 'admin':
+            return True
+    return False
 
 @app.route('/admin/dashboard', methods=["GET", "POST"])
 def admin_dashboard():
+    if not is_admin():
+        flash('You are not authorized to access the admin dashboard.', 'error')
+        return redirect('/home')
+    
     if request.method == 'POST':
-        con = sqlite3.connect('sea-assignment/database.db')
-        cur = con.cursor()
-        cur.execute("SELECT * FROM users WHERE user_type = 'admin' AND approved = 0")
-        pending_users = cur.fetchall()
-        con.commit()
-    return render_template('admin-dashboard.html', pending_users=pending_users)
+        selected_users = request.form.getlist('approve_user')
+        if selected_users:
+            con = sqlite3.connect('sea-assignment/database.db')
+            cur = con.cursor()
+
+            for username in selected_users:
+                # Update user_type to 'admin' and approved to 1 for the selected user(s)
+                cur.execute('UPDATE users SET user_type = ?, approved = ? WHERE username = ?',
+                            ('admin', 1, username))
+
+            con.commit()
+            con.close()
+
+            flash('Selected user(s) approved as admin successfully.', 'success')
+        else:
+            flash('No users selected for approval.', 'warning')
+
+    con = sqlite3.connect('sea-assignment/database.db')
+    cur = con.cursor()
+    cur.execute("SELECT * FROM users WHERE user_type = 'regular' AND approved = 0")
+    pending_users = cur.fetchall()
+
+    cur.execute("SELECT * FROM users WHERE user_type = 'admin' AND approved = 1")
+    admins = cur.fetchall()
+
+    con.close()
+
+    return render_template('admin-dashboard.html', pending_users=pending_users, admins=admins)
+
 
 
 @app.route('/logout')
