@@ -5,7 +5,9 @@ from flask import Flask, redirect, render_template, request, session
 def register_user_to_db(username, password):
     con = sqlite3.connect('sea-assignment/database.db')
     cur = con.cursor()
-    cur.execute('INSERT INTO users(username,password) VALUES (?,?)', (username, password))
+    user_data = {'username': username, 'password': password, 'user_type': 'regular', 'approved': False}
+    cur.execute('INSERT INTO users(username, password, user_type, approved) VALUES (?, ?, ?, ?)',
+            (user_data['username'], user_data['password'], user_data['user_type'], user_data['approved']))
     con.commit()
     con.close()
 
@@ -51,8 +53,9 @@ def login():
         print(check_user(username, password))
         if check_user(username, password):
             session['username'] = username
-
-        return redirect("/home")
+            return redirect("/home")
+        else:
+            return render_template('login-failed.html')
     else:
         return redirect("/")
 
@@ -60,16 +63,25 @@ def login():
 @app.route('/home', methods=['POST', "GET"])
 def home():
     if 'username' in session:
-        # TODO Update the home.html with more functionality
+        # home should include the options to view different tables and the admin dashboard
         return render_template('home.html', username=session['username'])
     else:
-        # TODO Add a failed login page
-        return "Username or Password is wrong!"
+        return render_template('login-failed.html')
+
+@app.route('/admin/dashboard', methods=["GET", "POST"])
+def admin_dashboard():
+    if request.method == 'POST':
+        con = sqlite3.connect('sea-assignment/database.db')
+        cur = con.cursor()
+        cur.execute("SELECT * FROM users WHERE user_type = 'admin' AND approved = 0")
+        pending_users = cur.fetchall()
+        con.commit()
+    return render_template('admin-dashboard.html', pending_users=pending_users)
 
 
 @app.route('/logout')
 def logout():
-    session.clear()
+    session['username'] = None
     return redirect("/")
 
 

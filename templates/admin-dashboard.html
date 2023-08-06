@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+<h2>Pending Users</h2>
+<form method="post">
+    <ul>
+        {% for user in pending_users %}
+            <li>
+                <input type="radio" name="{{ user[1] }}" value="approve"> Approve
+                <input type="radio" name="{{ user[1] }}" value="reject"> Reject
+                Username: {{ user[1] }}
+            </li>
+        {% endfor %}
+    </ul>
+    <button type="submit">Submit</button>
+</form>
+
+{% endblock %}
