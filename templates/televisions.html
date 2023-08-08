@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Television Records</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h2>Television Records</h2>
+    <table>
+        <tr>
+            <th>TV ID</th>
+            <th>Brand</th>
+            <th>Audio</th>
+            <th>Resolution</th>
+            <th>Refresh Rate</th>
+            <th>Screen Size</th>
+        </tr>
+        {% for tv in television_results %}
+            <tr>
+                <td>{{ tv[0] }}</td>
+                <td>{{ tv[1] }}</td>
+                <td>{{ tv[2] }}</td>
+                <td>{{ tv[3] }}</td>
+                <td>{{ tv[4] }}</td>
+                <td>{{ tv[5] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

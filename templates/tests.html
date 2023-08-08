@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Records</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h2>Test Records</h2>
+    <table>
+        <tr>
+            <th>Test ID</th>
+            <th>Test Name</th>
+            <th>Duration</th>
+            <th>Region</th>
+            <th>Audio Test Type</th>
+            <th>Playback Type</th>
+            <th>Test Criteria</th>
+            <th>Test Parameters</th>
+        </tr>
+        {% for test in test_cases %}
+            <tr>
+                <td>{{ test[0] }}</td>
+                <td>{{ test[1] }}</td>
+                <td>{{ test[2] }}</td>
+                <td>{{ test[3] }}</td>
+                <td>{{ test[4] }}</td>
+                <td>{{ test[5] }}</td>
+                <td>{{ test[6] }}</td>
+                <td>{{ test[7] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

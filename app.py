@@ -63,10 +63,30 @@ def login():
 @app.route('/home', methods=['POST', "GET"])
 def home():
     if 'username' in session:
-        # home should include the options to view different tables and the admin dashboard
         return render_template('home.html', username=session['username'])
     else:
         return render_template('login-failed.html')
+    
+@app.route('/televisions', methods=['GET'])
+def televisions():
+    con = sqlite3.connect('sea-assignment/database.db')
+    cur = con.cursor()
+    cur.execute("SELECT * FROM televisions")
+    television_results = cur.fetchall()
+    con.commit()
+    con.close()
+    return render_template('televisions.html', television_results=television_results)
+
+@app.route('/tests', methods=['GET'])
+def tests():
+    con = sqlite3.connect('sea-assignment/database.db')
+    cur = con.cursor()
+    cur.execute("SELECT * FROM tests")
+    test_cases = cur.fetchall()
+    con.commit()
+    con.close()
+    return render_template('tests.html', test_cases=test_cases)
+    
     
 def is_admin():
     if 'username' in session:
@@ -117,6 +137,13 @@ def admin_dashboard():
     return render_template('admin-dashboard.html', pending_users=pending_users, admins=admins)
 
 
+@app.route('/admin/televisions/edit', methods=['GET'])
+def edit_televisions():
+    pass
+
+@app.route('/admin/tests/edit', methods=['GET'])
+def edit_tests():
+    pass
 
 @app.route('/logout')
 def logout():
