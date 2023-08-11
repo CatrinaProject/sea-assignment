@@ -15,6 +15,10 @@
         th {
             background-color: #f2f2f2;
         }
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
     </style>
 </head>
 <body>
@@ -27,6 +31,7 @@
             <th>Resolution</th>
             <th>Refresh Rate</th>
             <th>Screen Size</th>
+            <th>Actions</th>
         </tr>
         {% for tv in television_results %}
             <tr>
@@ -36,6 +41,10 @@
                 <td>{{ tv[3] }}</td>
                 <td>{{ tv[4] }}</td>
                 <td>{{ tv[5] }}</td>
+                <td class="actions">
+                    <a href="/admin/televisions/edit?tv_id={{ tv[0] }}">Edit</a>
+                    <a href="/admin/televisions/delete?tv_id={{ tv[0] }}">Delete</a>
+                </td>
             </tr>
         {% endfor %}
     </table>

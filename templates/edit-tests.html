@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Test</title>
+</head>
+<body>
+    <h2>Edit Test</h2>
+    <form method="post" action="/admin/tests/edit/submit">
+        <input type="hidden" name="test_id" value="{{ test_id }}">
+        <label for="test_name">Test Name:</label>
+        <input type="text" name="test_name" value="{{ test_name }}" required><br>
+        <label for="duration">Duration:</label>
+        <input type="text" name="duration" value="{{ duration }}" required><br>
+        <label for="region">Region:</label>
+        <input type="text" name="region" value="{{ region }}" required><br>
+        <label for="audio_test_type">Audio Test Type:</label>
+        <input type="text" name="audio_test_type" value="{{ audio_test_type }}" required><br>
+        <label for="playback_type">Playback Type:</label>
+        <input type="text" name="playback_type" value="{{ playback_type }}" required><br>
+        <label for="test_criteria">Test Criteria:</label>
+        <input type="text" name="test_criteria" value="{{ test_criteria }}" required><br>
+        <label for="test_parameters">Test Parameters:</label>
+        <input type="text" name="test_parameters" value="{{ test_parameters }}" required><br>
+        <button type="submit">Save Changes</button>
+    </form>
+</body>
+</html>

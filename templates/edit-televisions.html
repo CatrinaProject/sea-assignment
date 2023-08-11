@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Television</title>
+</head>
+<body>
+    <h2>Edit Television</h2>
+    <form method="post" action="/admin/televisions/edit/submit">
+        <input type="hidden" name="tv_id" value="{{ tv_id }}">
+        <label for="brand">Brand:</label>
+        <input type="text" name="brand" value="{{ brand }}" required><br>
+        <label for="audio">Audio:</label>
+        <input type="text" name="audio" value="{{ audio }}" required><br>
+        <label for="resolution">Resolution:</label>
+        <input type="text" name="resolution" value="{{ resolution }}" required><br>
+        <label for="refresh_rate">Refresh Rate:</label>
+        <input type="text" name="refresh_rate" value="{{ refresh_rate }}" required><br>
+        <label for="screen_size">Screen Size:</label>
+        <input type="text" name="screen_size" value="{{ screen_size }}" required><br>
+        <button type="submit">Save Changes</button>
+    </form>
+</body>
+</html>

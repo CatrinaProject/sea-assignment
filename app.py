@@ -1,5 +1,5 @@
 import sqlite3
-from flask import Flask, redirect, render_template, request, session, flash
+from flask import Flask, redirect, render_template, request, session
 
 
 def register_user_to_db(username, password):
@@ -103,7 +103,6 @@ def is_admin():
 @app.route('/admin/dashboard', methods=["GET", "POST"])
 def admin_dashboard():
     if not is_admin():
-        flash('You are not authorized to access the admin dashboard.', 'error')
         return redirect('/home')
     
     if request.method == 'POST':
@@ -119,10 +118,8 @@ def admin_dashboard():
 
             con.commit()
             con.close()
-
-            flash('Selected user(s) approved as admin successfully.', 'success')
         else:
-            flash('No users selected for approval.', 'warning')
+            print('No users selected for approval.')
 
     con = sqlite3.connect('sea-assignment/database.db')
     cur = con.cursor()
@@ -138,12 +135,92 @@ def admin_dashboard():
 
 
 @app.route('/admin/televisions/edit', methods=['GET'])
-def edit_televisions():
-    pass
+def edit_television():
+    tv_id = request.args.get('tv_id')
+    conn = sqlite3.connect('sea-assignment/database.db')
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM Televisions WHERE tv_id = ?", (tv_id,))
+    tv_record = cur.fetchone()
+    conn.close()
+    return render_template('edit-televisions.html', tv_id=tv_id, brand=tv_record[1], audio=tv_record[2], resolution=tv_record[3], refresh_rate=tv_record[4], screen_size=tv_record[5])
+
+@app.route('/admin/televisions/edit/submit', methods=['POST'])
+def update_television_record():
+    if request.method == 'POST':
+        tv_id = request.form['tv_id']
+        brand = request.form['brand']
+        audio = request.form['audio']
+        resolution = request.form['resolution']
+        refresh_rate = request.form['refresh_rate']
+        screen_size = request.form['screen_size']
+
+        # Update the television record
+        conn = sqlite3.connect('sea-assignment/database.db')
+        cur = conn.cursor()
+        cur.execute('''
+            UPDATE Televisions
+            SET brand=?, audio=?, resolution=?, refresh_rate=?, screen_size=?
+            WHERE tv_id=?
+        ''', (brand, audio, resolution, refresh_rate, screen_size, tv_id))
+        conn.commit()
+        conn.close()
+
+        return redirect('/televisions')  # Redirect to the page displaying television records
+    
+@app.route('/admin/televisions/delete', methods=['GET'])
+def delete_television():
+    tv_id = request.args.get('tv_id')
+    conn = sqlite3.connect('sea-assignment/database.db')
+    cur = conn.cursor()
+    cur.execute("DELETE FROM Televisions WHERE tv_id = ?", (tv_id,))
+    conn.commit()
+    conn.close()
+    return redirect('/televisions')
 
 @app.route('/admin/tests/edit', methods=['GET'])
 def edit_tests():
-    pass
+    test_id = request.args.get('test_id')
+    conn = sqlite3.connect('sea-assignment/database.db')
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM Tests WHERE test_id = ?", (test_id,))
+    test_record = cur.fetchone()
+    conn.close()
+    return render_template('edit-tests.html', test_id=test_id, test_name=test_record[1], duration=test_record[2], region=test_record[3], audio_test_type=test_record[4], playback_type=test_record[5], test_criteria=test_record[6], test_parameters=test_record[7])
+
+@app.route('/admin/tests/edit/submit', methods=['POST'])
+def update_test_record():
+    if request.method == 'POST':
+        test_id = request.form['test_id']
+        test_name = request.form['test_name']
+        duration = request.form['duration']
+        region = request.form['region']
+        audio_test_type = request.form['audio_test_type']
+        playback_type = request.form['playback_type']
+        test_criteria = request.form['test_criteria']
+        test_parameters = request.form['test_parameters']
+
+        # Update the test record
+        conn = sqlite3.connect('sea-assignment/database.db')
+        cur = conn.cursor()
+        cur.execute('''
+            UPDATE Tests
+            SET test_name=?, duration=?, region=?, audio_test_type=?, playback_type=?, test_criteria=?, test_parameters=?
+            WHERE test_id=?
+        ''', (test_name, duration, region, audio_test_type, playback_type, test_criteria, test_parameters, test_id))
+        conn.commit()
+        conn.close()
+
+        return redirect('/tests')  # Redirect to the page displaying test records
+    
+@app.route('/admin/tests/delete', methods=['GET'])
+def delete_test():
+    test_id = request.args.get('test_id')
+    conn = sqlite3.connect('sea-assignment/database.db')
+    cur = conn.cursor()
+    cur.execute("DELETE FROM Tests WHERE test_id = ?", (test_id,))
+    conn.commit()
+    conn.close()
+    return redirect('/tests')
 
 @app.route('/logout')
 def logout():
