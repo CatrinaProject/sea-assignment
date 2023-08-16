@@ -27,6 +27,24 @@ def check_user(username, password):
 app = Flask(__name__)
 app.secret_key = "weewoo"
 
+def is_admin():
+    if 'username' in session:
+        username = session['username']
+        con = sqlite3.connect('sea-assignment/database.db')
+        cur = con.cursor()
+        cur.execute("SELECT user_type FROM users WHERE username = ?", (username,))
+        user_type = cur.fetchone()
+        con.close()
+        if user_type and user_type[0] == 'admin':
+            return True
+    return False
+
+@app.before_request
+def check_admin_route():
+    if request.path.startswith('/admin'):
+        if not is_admin():
+            return redirect('/home')
+
 @app.route("/")
 def index():
     return render_template('login.html')
@@ -86,25 +104,9 @@ def tests():
     con.commit()
     con.close()
     return render_template('tests.html', test_cases=test_cases)
-    
-    
-def is_admin():
-    if 'username' in session:
-        username = session['username']
-        con = sqlite3.connect('sea-assignment/database.db')
-        cur = con.cursor()
-        cur.execute("SELECT user_type FROM users WHERE username = ?", (username,))
-        user_type = cur.fetchone()
-        con.close()
-        if user_type and user_type[0] == 'admin':
-            return True
-    return False
 
 @app.route('/admin/dashboard', methods=["GET", "POST"])
 def admin_dashboard():
-    if not is_admin():
-        return redirect('/home')
-    
     if request.method == 'POST':
         selected_users = request.form.getlist('approve_user')
         if selected_users:
@@ -189,6 +191,7 @@ def edit_tests():
 
 @app.route('/admin/tests/edit/submit', methods=['POST'])
 def update_test_record():
+    is_admin()
     if request.method == 'POST':
         test_id = request.form['test_id']
         test_name = request.form['test_name']
