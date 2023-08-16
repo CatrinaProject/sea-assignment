@@ -3,19 +3,19 @@
 <head>
     <title>Edit Test</title>
     <script>
-        // function validateInput(inputElement) {
-        //     var validCharsPattern = /^[a-zA-Z0-9\s\-.,']+$/; 
-        //     var errorMessageElement = document.getElementById('error-message');
-        //     var saveButton = document.getElementById('save-button');
+        function validateInput(inputElement) {
+            var validCharsPattern = /^[a-zA-Z0-9\s\-.,']+$/; 
+            var errorMessageElement = document.getElementById('error-message');
+            var saveButton = document.getElementById('save-button');
             
-        //     if (!validCharsPattern.test(inputElement.value) || inputElement.value.length > 50) {
-        //         errorMessageElement.textContent = 'Invalid characters or too long (max 50 characters).';
-        //         saveButton.disabled = true;
-        //     } else {
-        //         errorMessageElement.textContent = '';
-        //         saveButton.disabled = false;
-        //     }
-        // }
+            if (!validCharsPattern.test(inputElement.value) || inputElement.value.length > 50) {
+                errorMessageElement.textContent = 'Invalid characters or too long (max 50 characters).';
+                saveButton.disabled = true;
+            } else {
+                errorMessageElement.textContent = '';
+                saveButton.disabled = false;
+            }
+        }
 
         function validateDuration(inputElement) {
             var durationValue = inputElement.value;
@@ -26,7 +26,7 @@
             var decimalRegex = /^\d{1,5}(\.\d{1,2})?$/;
             
             if (!decimalRegex.test(durationValue) || durationValue <= 0) {
-                errorMessageElement.textContent = 'Maximum of 2 decimal places';
+                errorMessageElement.textContent = 'Invalid Decimal or Maximum of 2 decimal places';
                 saveButton.disabled = true;
             } else {
                 errorMessageElement.textContent = '';
@@ -52,7 +52,7 @@
         <label for="playback_type">Playback Type:</label>
         <input type="text" name="playback_type" value="{{ playback_type }}" required oninput="validateInput(this)"><br>
         <label for="test_criteria">Test Criteria:</label>
-        <input type="text" name="test_criteria" value="{{ test_criteria }}" required><br>
+        <input type="text" name="test_criteria" value="{{ test_criteria }}" required oninput="validateInput(this)"><br>
         <label for="test_parameters">Test Parameters:</label>
         <input type="text" name="test_parameters" value="{{ test_parameters }}" required oninput="validateInput(this)"><br>
         <button type="submit" id="save-button">Save Changes</button>

@@ -27,7 +27,7 @@ def check_user(username, password):
 
 
 app = Flask(__name__)
-app.secret_key = "weewoo"
+app.secret_key = "ee3rs2"
 
 def is_admin():
     if 'username' in session:
@@ -97,6 +97,27 @@ def televisions():
     con.close()
     return render_template('televisions.html', television_results=television_results)
 
+@app.route('/televisions/add', methods=['POST'])
+def add_television_record():
+    if request.method == 'POST':
+        brand = request.form['brand']
+        audio = request.form['audio']
+        resolution = request.form['resolution']
+        refresh_rate = request.form['refresh_rate']
+        screen_size = request.form['screen_size']
+
+        # Insert the new television record
+        conn = sqlite3.connect('sea-assignment/database.db')
+        cur = conn.cursor()
+        cur.execute('''
+            INSERT INTO Televisions (brand, audio, resolution, refresh_rate, screen_size)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (brand, audio, resolution, refresh_rate, screen_size))
+        conn.commit()
+        conn.close()
+
+        return redirect('/televisions') # Redirect to the page displaying television records 
+
 @app.route('/tests', methods=['GET'])
 def tests():
     con = sqlite3.connect('sea-assignment/database.db')
@@ -106,6 +127,30 @@ def tests():
     con.commit()
     con.close()
     return render_template('tests.html', test_cases=test_cases)
+
+@app.route('/tests/add', methods=['POST'])
+def add_test_record():
+    if request.method == 'POST':
+        test_name = request.form['test_name']
+        duration = request.form['duration']
+        region = request.form['region']
+        audio_test_type = request.form['audio_test_type']
+        playback_type = request.form['playback_type']
+        test_criteria = request.form['test_criteria']
+        test_parameters = request.form['test_parameters']
+
+        # Insert the new television record
+        conn = sqlite3.connect('sea-assignment/database.db')
+        cur = conn.cursor()
+        cur.execute('''
+            INSERT INTO Tests (test_name, duration, region, audio_test_type, playback_type, test_criteria, test_parameters)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (test_name, duration, region, audio_test_type, playback_type, test_criteria, test_parameters))
+        conn.commit()
+        conn.close()
+
+        return redirect('/tests') # Redirect to the page displaying television records 
+
 
 @app.route('/admin/dashboard', methods=["GET", "POST"])
 def admin_dashboard():

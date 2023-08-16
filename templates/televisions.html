@@ -20,6 +20,21 @@
             gap: 10px;
         }
     </style>
+    <script>
+        function validateInput(inputElement) {
+            var validCharsPattern = /^[a-zA-Z0-9\s\-.,']+$/; 
+            var errorMessageElement = document.getElementById('error-message');
+            var addRecordButton = document.getElementById('add-record-button');
+            
+            if (!validCharsPattern.test(inputElement.value) || inputElement.value.length > 50) {
+                errorMessageElement.textContent = 'Invalid characters or too long (max 50 characters).';
+                addRecordButton.disabled = true;
+            } else {
+                errorMessageElement.textContent = '';
+                addRecordButton.disabled = false;
+            }
+        }
+    </script> 
 </head>
 <body>
     <h2>Television Records</h2>
@@ -48,5 +63,20 @@
             </tr>
         {% endfor %}
     </table>
+    <form method="post" action="/televisions/add">
+        <div id="error-message" style="color: red;"></div>
+        <input type="hidden" name="tv_id" value="{{ tv_id }}">
+        <label for="brand">Brand:</label>
+        <input type="text" name="brand" value="{{ brand }}" required oninput="validateInput(this)"><br>
+        <label for="audio">Audio:</label>
+        <input type="text" name="audio" value="{{ audio }}" required oninput="validateInput(this)"><br>
+        <label for="resolution">Resolution:</label>
+        <input type="text" name="resolution" value="{{ resolution }}" required oninput="validateInput(this)"><br>
+        <label for="refresh_rate">Refresh Rate:</label>
+        <input type="text" name="refresh_rate" value="{{ refresh_rate }}" required oninput="validateInput(this)"><br>
+        <label for="screen_size">Screen Size:</label>
+        <input type="text" name="screen_size" value="{{ screen_size }}" required oninput="validateInput(this)"><br>
+        <button type="submit" id="add-record-button">Add new record</button>
+    </form>
 </body>
 </html>
