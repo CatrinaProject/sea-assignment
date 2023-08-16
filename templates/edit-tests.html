@@ -2,26 +2,60 @@
 <html>
 <head>
     <title>Edit Test</title>
+    <script>
+        // function validateInput(inputElement) {
+        //     var validCharsPattern = /^[a-zA-Z0-9\s\-.,']+$/; 
+        //     var errorMessageElement = document.getElementById('error-message');
+        //     var saveButton = document.getElementById('save-button');
+            
+        //     if (!validCharsPattern.test(inputElement.value) || inputElement.value.length > 50) {
+        //         errorMessageElement.textContent = 'Invalid characters or too long (max 50 characters).';
+        //         saveButton.disabled = true;
+        //     } else {
+        //         errorMessageElement.textContent = '';
+        //         saveButton.disabled = false;
+        //     }
+        // }
+
+        function validateDuration(inputElement) {
+            var durationValue = inputElement.value;
+            var errorMessageElement = document.getElementById('error-message');
+            var saveButton = document.getElementById('save-button');
+            
+            // Regular expression to match valid decimal numbers with up to 5 digits and 3 decimal places
+            var decimalRegex = /^\d{1,5}(\.\d{1,2})?$/;
+            
+            if (!decimalRegex.test(durationValue) || durationValue <= 0) {
+                errorMessageElement.textContent = 'Maximum of 2 decimal places';
+                saveButton.disabled = true;
+            } else {
+                errorMessageElement.textContent = '';
+                saveButton.disabled = false;
+            }
+        }
+
+    </script>
 </head>
 <body>
     <h2>Edit Test</h2>
+    <div id="error-message" style="color: red;"></div>
     <form method="post" action="/admin/tests/edit/submit">
         <input type="hidden" name="test_id" value="{{ test_id }}">
         <label for="test_name">Test Name:</label>
-        <input type="text" name="test_name" value="{{ test_name }}" required><br>
+        <input type="text" name="test_name" value="{{ test_name }}" required oninput="validateInput(this)"><br>
         <label for="duration">Duration:</label>
-        <input type="text" name="duration" value="{{ duration }}" required><br>
+        <input type="text" name="duration" value="{{ duration }}" required oninput="validateDuration(this)"><br>
         <label for="region">Region:</label>
-        <input type="text" name="region" value="{{ region }}" required><br>
+        <input type="text" name="region" value="{{ region }}" required oninput="validateInput(this)"><br>
         <label for="audio_test_type">Audio Test Type:</label>
-        <input type="text" name="audio_test_type" value="{{ audio_test_type }}" required><br>
+        <input type="text" name="audio_test_type" value="{{ audio_test_type }}" required oninput="validateInput(this)"><br>
         <label for="playback_type">Playback Type:</label>
-        <input type="text" name="playback_type" value="{{ playback_type }}" required><br>
+        <input type="text" name="playback_type" value="{{ playback_type }}" required oninput="validateInput(this)"><br>
         <label for="test_criteria">Test Criteria:</label>
         <input type="text" name="test_criteria" value="{{ test_criteria }}" required><br>
         <label for="test_parameters">Test Parameters:</label>
-        <input type="text" name="test_parameters" value="{{ test_parameters }}" required><br>
-        <button type="submit">Save Changes</button>
+        <input type="text" name="test_parameters" value="{{ test_parameters }}" required oninput="validateInput(this)"><br>
+        <button type="submit" id="save-button">Save Changes</button>
     </form>
 </body>
 </html>

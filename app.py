@@ -1,4 +1,6 @@
+import re
 import sqlite3
+
 from flask import Flask, redirect, render_template, request, session
 
 
@@ -156,6 +158,11 @@ def update_television_record():
         refresh_rate = request.form['refresh_rate']
         screen_size = request.form['screen_size']
 
+        # Validate input using regex to prevent inappropriate characters
+        valid_chars_pattern = re.compile(r'^[a-zA-Z0-9\s\-.,\']+?$') 
+        if not valid_chars_pattern.match(brand + audio + resolution + refresh_rate + screen_size) or len(brand + audio + resolution + refresh_rate + screen_size) > 50:
+            return "Invalid characters or length detected."
+
         # Update the television record
         conn = sqlite3.connect('sea-assignment/database.db')
         cur = conn.cursor()
@@ -201,6 +208,19 @@ def update_test_record():
         playback_type = request.form['playback_type']
         test_criteria = request.form['test_criteria']
         test_parameters = request.form['test_parameters']
+
+        # Validate input using regex to prevent inappropriate characters
+        valid_chars_pattern = re.compile(r'^[a-zA-Z0-9\s\-.,\']+?$') 
+        if not valid_chars_pattern.match(test_name + duration + region + audio_test_type + playback_type + test_criteria + test_parameters) or len(test_name + duration + region + audio_test_type + playback_type + test_criteria + test_parameters) > 50:
+            return "Invalid characters or length detected."
+        else:
+            print("huh")
+
+        # Validate duration as a decimal with up to 2 decimal places and a total of 5 digits
+        if not re.match(r'^\d{1,5}(\.\d{1,2})?$', duration):
+            return "Invalid duration value."
+
+
 
         # Update the test record
         conn = sqlite3.connect('sea-assignment/database.db')
