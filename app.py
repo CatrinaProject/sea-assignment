@@ -47,7 +47,8 @@ def is_admin():  # Checks whether the user is an admin
 
 
 def validate_bad_chars(params):
-    # Validate input using regex to prevent inappropriate characters
+    # Validate input using regex to prevent inappropriate characters.
+    # Although this is managed in front-end scripting it adds an extra layer of protection on the server side.
     valid_chars_pattern = re.compile(r'^[a-zA-Z0-9\s\-.,\']+?$')
     if not valid_chars_pattern.match(params) or len(params) > 50:
         return "Invalid characters or length detected."
@@ -128,6 +129,10 @@ def add_television_record():
     if request.method == 'POST':
         form_values = extract_television_form_values(request)
 
+        validate_bad_chars(params=form_values['brand'] + form_values['audio'] +
+                                  form_values['resolution'] + form_values['refresh_rate'] +
+                                  form_values['screen_size'])
+
         # Insert new television record with parameters submitted by the user
         conn = sqlite3.connect('database.db')
         cur = conn.cursor()
@@ -170,6 +175,11 @@ def extract_tests_form_values(test_request):
 def add_test_record():
     if request.method == 'POST':
         form_values = extract_tests_form_values(request)
+
+        validate_bad_chars(
+            params=form_values['test_name'] + form_values['duration'] + form_values['region']
+                   + form_values['audio_test_type'] + form_values['playback_type'] + form_values['test_criteria']
+                   + form_values['test_parameters'])
 
         # Insert new test record with parameters submitted by the user
         conn = sqlite3.connect('database.db')
