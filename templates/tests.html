@@ -54,7 +54,7 @@
     <form method="post" action="/tests/add">
         <label for="test_name">Test Name:</label>
         <input type="text" name="test_name" value="{{ test_name }}" required oninput="validateInput(this, 'add-record-button')"><br>
-        <label for="duration">Duration:</label>
+        <label for="duration">Duration (mins):</label>
         <input type="text" name="duration" value="{{ duration }}" required oninput="validateDuration(this, 'add-record-button')"><br>
         <label for="region">Region:</label>
         <input type="text" name="region" value="{{ region }}" required oninput="validateInput(this, 'add-record-button')"><br>

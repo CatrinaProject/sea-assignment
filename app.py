@@ -1,10 +1,13 @@
+# app.py serves as the backend of the web application, handling routing, data processing,
+# and interactions with the database to ensure the proper functioning of the application's features.
+
 import re
 import sqlite3
 
 from flask import Flask, redirect, render_template, request, session
 
 
-def register_user_to_db(username, password):
+def register_user_to_db(username, password):  # Registers new users to the database as a 'non-approved' regular user
     con = sqlite3.connect('database.db')
     cur = con.cursor()
     user_data = {'username': username, 'password': password, 'user_type': 'regular', 'approved': False}
@@ -14,7 +17,7 @@ def register_user_to_db(username, password):
     con.close()
 
 
-def check_user(username, password):
+def check_user(username, password):  # Checks whether the user exists in the database
     con = sqlite3.connect('database.db')
     cur = con.cursor()
     cur.execute('SELECT username,password FROM users WHERE username=? and password=?', (username, password))
@@ -30,7 +33,7 @@ app = Flask(__name__)
 app.secret_key = "ee3rs2"
 
 
-def is_admin():
+def is_admin():  # Checks whether the user is an admin
     if 'username' in session:
         username = session['username']
         con = sqlite3.connect('database.db')
@@ -43,38 +46,45 @@ def is_admin():
     return False
 
 
-@app.before_request
+def validate_bad_chars(params):
+    # Validate input using regex to prevent inappropriate characters
+    valid_chars_pattern = re.compile(r'^[a-zA-Z0-9\s\-.,\']+?$')
+    if not valid_chars_pattern.match(params) or len(params) > 50:
+        return "Invalid characters or length detected."
+
+
+@app.before_request  # Before each request, check if the user is an admin when accessing a /admin route
 def check_admin_route():
     if request.path.startswith('/admin'):
         if not is_admin():
             return redirect('/home')
 
 
-@app.route("/")
+@app.route("/")  # Main route: renders the login page
 def index():
-    return render_template('login.html')
+    return render_template('login.html')  # Renders the login page
 
 
-@app.route('/register', methods=["POST", "GET"])
+@app.route('/register', methods=["POST", "GET"])  # Route for user registration
 def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
 
-        register_user_to_db(username, password)
+        register_user_to_db(username, password)  # Registers the new user then redirects to login page
         return redirect("/")
 
     else:
         return render_template('register.html')
 
 
-@app.route('/login', methods=["POST", "GET"])
+@app.route('/login', methods=["POST", "GET"])  # Route for user login
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
         print(check_user(username, password))
-        if check_user(username, password):
+        if check_user(username, password):  # Creates a new session for the user, then redirects them to the home page
             session['username'] = username
             return redirect("/home")
         else:
@@ -83,7 +93,7 @@ def login():
         return redirect("/")
 
 
-@app.route('/home', methods=['POST', "GET"])
+@app.route('/home', methods=['POST', "GET"])  # Home route: displays the user's home page after logging in
 def home():
     if 'username' in session:
         return render_template('home.html', username=session['username'])
@@ -91,18 +101,18 @@ def home():
         return render_template('login-failed.html')
 
 
-@app.route('/televisions', methods=['GET'])
+@app.route('/televisions', methods=['GET'])  # Route to display a list of televisions
 def televisions():
     con = sqlite3.connect('database.db')
     cur = con.cursor()
-    cur.execute("SELECT * FROM televisions")
+    cur.execute("SELECT * FROM televisions")  # Get all the television records to be viewed on the page as a list
     television_results = cur.fetchall()
     con.commit()
     con.close()
     return render_template('televisions.html', television_results=television_results)
 
 
-@app.route('/televisions/add', methods=['POST'])
+@app.route('/televisions/add', methods=['POST'])  # Route to add a new television record
 def add_television_record():
     if request.method == 'POST':
         brand = request.form['brand']
@@ -111,7 +121,7 @@ def add_television_record():
         refresh_rate = request.form['refresh_rate']
         screen_size = request.form['screen_size']
 
-        # Insert the new television record
+        # Insert new television record with parameters submitted by the user
         conn = sqlite3.connect('database.db')
         cur = conn.cursor()
         cur.execute('''
@@ -124,10 +134,11 @@ def add_television_record():
         return redirect('/televisions')  # Redirect to the page displaying television records
 
 
-@app.route('/tests', methods=['GET'])
+@app.route('/tests', methods=['GET'])  # Route to display a list of tests
 def tests():
     con = sqlite3.connect('database.db')
     cur = con.cursor()
+    # Get all the test records to be viewed on the page as a list
     cur.execute("SELECT * FROM tests")
     test_cases = cur.fetchall()
     con.commit()
@@ -135,31 +146,42 @@ def tests():
     return render_template('tests.html', test_cases=test_cases)
 
 
-@app.route('/tests/add', methods=['POST'])
+def extract_tests_form_values(request):
+    return {
+        'test_name': request.form['test_name'],
+        'duration': request.form['duration'],
+        'region': request.form['region'],
+        'audio_test_type': request.form['audio_test_type'],
+        'playback_type': request.form['playback_type'],
+        'test_criteria': request.form['test_criteria'],
+        'test_parameters': request.form['test_parameters']
+    }
+
+
+@app.route('/tests/add', methods=['POST'])  # Route to add a new test record
 def add_test_record():
     if request.method == 'POST':
-        test_name = request.form['test_name']
-        duration = request.form['duration']
-        region = request.form['region']
-        audio_test_type = request.form['audio_test_type']
-        playback_type = request.form['playback_type']
-        test_criteria = request.form['test_criteria']
-        test_parameters = request.form['test_parameters']
+        form_values = extract_tests_form_values(request)
 
-        # Insert the new television record
+        # Insert new test record with parameters submitted by the user
         conn = sqlite3.connect('database.db')
         cur = conn.cursor()
         cur.execute('''
-            INSERT INTO Tests (test_name, duration, region, audio_test_type, playback_type, test_criteria, test_parameters)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (test_name, duration, region, audio_test_type, playback_type, test_criteria, test_parameters))
+            INSERT INTO Tests (
+                        test_name, duration, region, audio_test_type, playback_type, test_criteria, test_parameters
+                        )
+            VALUES (?, ?, ?, ?, ?) ''',
+                    (form_values['test_name'], form_values['duration'], form_values['region'],
+                     form_values['audio_test_type'], form_values['playback_type'], form_values['test_criteria'],
+                     form_values['test_parameters']))
         conn.commit()
         conn.close()
 
         return redirect('/tests')  # Redirect to the page displaying television records
 
 
-@app.route('/admin/dashboard', methods=["GET", "POST"])
+# ADMIN FUNCTIONALITY: The following admin/ routes will call the check_if_admin route. Only admins have permission.
+@app.route('/admin/dashboard', methods=["GET", "POST"])  # Admin dashboard route: displays pending users and admin users
 def admin_dashboard():
     if request.method == 'POST':
         selected_users = request.form.getlist('approve_user')
@@ -179,10 +201,10 @@ def admin_dashboard():
 
     con = sqlite3.connect('database.db')
     cur = con.cursor()
-    cur.execute("SELECT * FROM users WHERE user_type = 'regular' AND approved = 0")
+    cur.execute("SELECT * FROM users WHERE user_type = 'regular' AND approved = 0")  # Get all regular users
     pending_users = cur.fetchall()
 
-    cur.execute("SELECT * FROM users WHERE user_type = 'admin' AND approved = 1")
+    cur.execute("SELECT * FROM users WHERE user_type = 'admin' AND approved = 1")  # Get all admin users
     admins = cur.fetchall()
 
     con.close()
@@ -190,9 +212,10 @@ def admin_dashboard():
     return render_template('admin-dashboard.html', pending_users=pending_users, admins=admins)
 
 
-@app.route('/admin/televisions/edit', methods=['GET'])
+@app.route('/admin/televisions/edit', methods=['GET'])  # Route to load the 'edit a television record' page
 def edit_television():
     tv_id = request.args.get('tv_id')
+    # Get the requested television record with the user requested tv_id
     conn = sqlite3.connect('database.db')
     cur = conn.cursor()
     cur.execute("SELECT * FROM Televisions WHERE tv_id = ?", (tv_id,))
@@ -202,7 +225,7 @@ def edit_television():
                            resolution=tv_record[3], refresh_rate=tv_record[4], screen_size=tv_record[5])
 
 
-@app.route('/admin/televisions/edit/submit', methods=['POST'])
+@app.route('/admin/televisions/edit/submit', methods=['POST'])  # Route to edit a television record
 def update_television_record():
     if request.method == 'POST':
         tv_id = request.form['tv_id']
@@ -212,11 +235,7 @@ def update_television_record():
         refresh_rate = request.form['refresh_rate']
         screen_size = request.form['screen_size']
 
-        # Validate input using regex to prevent inappropriate characters
-        valid_chars_pattern = re.compile(r'^[a-zA-Z0-9\s\-.,\']+?$')
-        if not valid_chars_pattern.match(brand + audio + resolution + refresh_rate + screen_size) or len(
-                brand + audio + resolution + refresh_rate + screen_size) > 50:
-            return "Invalid characters or length detected."
+        validate_bad_chars(params=brand + audio + resolution + refresh_rate + screen_size)
 
         # Update the television record
         conn = sqlite3.connect('database.db')
@@ -232,7 +251,7 @@ def update_television_record():
         return redirect('/televisions')  # Redirect to the page displaying television records
 
 
-@app.route('/admin/televisions/delete', methods=['GET'])
+@app.route('/admin/televisions/delete', methods=['GET'])  # Route to delete a television record
 def delete_television():
     tv_id = request.args.get('tv_id')
     conn = sqlite3.connect('database.db')
@@ -243,7 +262,7 @@ def delete_television():
     return redirect('/televisions')
 
 
-@app.route('/admin/tests/edit', methods=['GET'])
+@app.route('/admin/tests/edit', methods=['GET'])  # Route to load the 'edit a test record' page
 def edit_tests():
     test_id = request.args.get('test_id')
     conn = sqlite3.connect('database.db')
@@ -256,7 +275,7 @@ def edit_tests():
                            test_criteria=test_record[6], test_parameters=test_record[7])
 
 
-@app.route('/admin/tests/edit/submit', methods=['POST'])
+@app.route('/admin/tests/edit/submit', methods=['POST'])  # Route to edit a test record
 def update_test_record():
     is_admin()
     if request.method == 'POST':
@@ -269,14 +288,8 @@ def update_test_record():
         test_criteria = request.form['test_criteria']
         test_parameters = request.form['test_parameters']
 
-        # Validate input using regex to prevent inappropriate characters
-        valid_chars_pattern = re.compile(r'^[a-zA-Z0-9\s\-.,\']+?$')
-        if not valid_chars_pattern.match(
-                test_name + duration + region + audio_test_type + playback_type + test_criteria + test_parameters) or len(
-                test_name + duration + region + audio_test_type + playback_type + test_criteria + test_parameters) > 50:
-            return "Invalid characters or length detected."
-        else:
-            print("huh")
+        validate_bad_chars(
+            params=test_name + duration + region + audio_test_type + playback_type + test_criteria + test_parameters)
 
         # Validate duration as a decimal with up to 2 decimal places and a total of 5 digits
         if not re.match(r'^\d{1,5}(\.\d{1,2})?$', duration):
@@ -296,7 +309,7 @@ def update_test_record():
         return redirect('/tests')  # Redirect to the page displaying test records
 
 
-@app.route('/admin/tests/delete', methods=['GET'])
+@app.route('/admin/tests/delete', methods=['GET'])  # Route to delete a test record
 def delete_test():
     test_id = request.args.get('test_id')
     conn = sqlite3.connect('database.db')
@@ -307,7 +320,7 @@ def delete_test():
     return redirect('/tests')
 
 
-@app.route('/logout')
+@app.route('/logout')  # Logout route: logs the user out by clearing session
 def logout():
     session['username'] = None
     return redirect("/")

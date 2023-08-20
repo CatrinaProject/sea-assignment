@@ -10,11 +10,13 @@
     {% block body %}{% endblock %}
     {% block scripts %}
     <script>
+        // Validates that the input does not have special characters and is not more than 50 characters
         function validateInput(inputElement, buttonElementId) {
             const validCharsPattern = /^[a-zA-Z0-9\s\-.,']+$/;
             const errorMessageElement = document.getElementById('error-message');
             const submitButton = document.getElementById(buttonElementId);
 
+            // Checks the regex, if requirements are NOT met, disable the button and show an error message
             if (!validCharsPattern.test(inputElement.value) || inputElement.value.length > 50) {
                 errorMessageElement.textContent = 'Invalid characters or too long (max 50 characters).';
                 submitButton.disabled = true;
@@ -26,6 +28,7 @@
     </script>
 
     <script>
+        // Validates that the duration is a legitimate decimal number
         function validateDuration(inputElement, buttonElementId) {
             validateInput(inputElement, buttonElementId)
             const durationValue = inputElement.value;
@@ -35,6 +38,7 @@
             // Regular expression to match valid decimal numbers with up to 5 digits and 3 decimal places
             const decimalRegex = /^\d{1,5}(\.\d{1,2})?$/;
 
+            // Checks the regex, if requirements are NOT met, disable the button and show an error message
             if (!decimalRegex.test(durationValue) || durationValue <= 0) {
                 errorMessageElement.textContent = 'Invalid Decimal. Max 5 digits, 2 decimal places.';
                 addRecordButton.disabled = true;
@@ -46,8 +50,9 @@
     </script>
 
     <script>
+        // Validates that username follows requirements
         function validateUsername(inputElement, buttonElementId ) {
-            validateInput(inputElement, buttonElementId)
+            validateInput(inputElement, buttonElementId)  // Uses the input validation common to all pages
             const usernameValue = inputElement.value;
             const errorMessageElement = document.getElementById('error-message');
             const submitButton = document.getElementById(buttonElementId);
@@ -55,6 +60,7 @@
             // Regular expression to match valid usernames (at least 5 letters, no numbers)
             const usernameRegex = /^[a-zA-Z]{5,}$/;
 
+            // Checks the regex, if requirements are NOT met, disable the button and show an error message
             if (!usernameRegex.test(usernameValue)) {
                 errorMessageElement.textContent = "Invalid username. Must be at least 5 letters and no numbers. OR Invalid characters/length (max 50 characters).";
                 submitButton.disabled = true;
@@ -66,12 +72,13 @@
     </script>
 
     <script>
+        // Validates the password follows the requirements below
         function validatePassword(inputElement, buttonElementId) {
             const passwordValue = inputElement.value;
             const errorMessageElement = document.getElementById('password-error-message');
             const submitButton = document.getElementById(buttonElementId);
 
-            // Regular expressions for password criteria
+            // Regular expressions for password requirements
             const lengthRegex = /.{5,}/;
             const uppercaseRegex = /[A-Z]/;
             const lowercaseRegex = /[a-z]/;
@@ -84,6 +91,7 @@
             const isDigitValid = digitRegex.test(passwordValue);
             const isSpecialCharValid = specialCharRegex.test(passwordValue);
 
+            // Checks the regex, if requirements are NOT met, disable the button and show an error message
             if (
                 !isLengthValid ||
                 !isUppercaseValid ||
@@ -91,6 +99,7 @@
                 !isDigitValid ||
                 !isSpecialCharValid
             ) {
+                // Password requirements used in the error message
                 const requirements = [
                     'Minimum length of 5 characters.',
                     'At least one uppercase letter.',
