@@ -5,17 +5,17 @@ from flask import Flask, redirect, render_template, request, session
 
 
 def register_user_to_db(username, password):
-    con = sqlite3.connect('sea-assignment/database.db')
+    con = sqlite3.connect('database.db')
     cur = con.cursor()
     user_data = {'username': username, 'password': password, 'user_type': 'regular', 'approved': False}
     cur.execute('INSERT INTO users(username, password, user_type, approved) VALUES (?, ?, ?, ?)',
-            (user_data['username'], user_data['password'], user_data['user_type'], user_data['approved']))
+                (user_data['username'], user_data['password'], user_data['user_type'], user_data['approved']))
     con.commit()
     con.close()
 
 
 def check_user(username, password):
-    con = sqlite3.connect('sea-assignment/database.db')
+    con = sqlite3.connect('database.db')
     cur = con.cursor()
     cur.execute('SELECT username,password FROM users WHERE username=? and password=?', (username, password))
 
@@ -29,10 +29,11 @@ def check_user(username, password):
 app = Flask(__name__)
 app.secret_key = "ee3rs2"
 
+
 def is_admin():
     if 'username' in session:
         username = session['username']
-        con = sqlite3.connect('sea-assignment/database.db')
+        con = sqlite3.connect('database.db')
         cur = con.cursor()
         cur.execute("SELECT user_type FROM users WHERE username = ?", (username,))
         user_type = cur.fetchone()
@@ -41,11 +42,13 @@ def is_admin():
             return True
     return False
 
+
 @app.before_request
 def check_admin_route():
     if request.path.startswith('/admin'):
         if not is_admin():
             return redirect('/home')
+
 
 @app.route("/")
 def index():
@@ -86,16 +89,18 @@ def home():
         return render_template('home.html', username=session['username'])
     else:
         return render_template('login-failed.html')
-    
+
+
 @app.route('/televisions', methods=['GET'])
 def televisions():
-    con = sqlite3.connect('sea-assignment/database.db')
+    con = sqlite3.connect('database.db')
     cur = con.cursor()
     cur.execute("SELECT * FROM televisions")
     television_results = cur.fetchall()
     con.commit()
     con.close()
     return render_template('televisions.html', television_results=television_results)
+
 
 @app.route('/televisions/add', methods=['POST'])
 def add_television_record():
@@ -107,7 +112,7 @@ def add_television_record():
         screen_size = request.form['screen_size']
 
         # Insert the new television record
-        conn = sqlite3.connect('sea-assignment/database.db')
+        conn = sqlite3.connect('database.db')
         cur = conn.cursor()
         cur.execute('''
             INSERT INTO Televisions (brand, audio, resolution, refresh_rate, screen_size)
@@ -116,17 +121,19 @@ def add_television_record():
         conn.commit()
         conn.close()
 
-        return redirect('/televisions') # Redirect to the page displaying television records 
+        return redirect('/televisions')  # Redirect to the page displaying television records
+
 
 @app.route('/tests', methods=['GET'])
 def tests():
-    con = sqlite3.connect('sea-assignment/database.db')
+    con = sqlite3.connect('database.db')
     cur = con.cursor()
     cur.execute("SELECT * FROM tests")
     test_cases = cur.fetchall()
     con.commit()
     con.close()
     return render_template('tests.html', test_cases=test_cases)
+
 
 @app.route('/tests/add', methods=['POST'])
 def add_test_record():
@@ -140,7 +147,7 @@ def add_test_record():
         test_parameters = request.form['test_parameters']
 
         # Insert the new television record
-        conn = sqlite3.connect('sea-assignment/database.db')
+        conn = sqlite3.connect('database.db')
         cur = conn.cursor()
         cur.execute('''
             INSERT INTO Tests (test_name, duration, region, audio_test_type, playback_type, test_criteria, test_parameters)
@@ -149,7 +156,7 @@ def add_test_record():
         conn.commit()
         conn.close()
 
-        return redirect('/tests') # Redirect to the page displaying television records 
+        return redirect('/tests')  # Redirect to the page displaying television records
 
 
 @app.route('/admin/dashboard', methods=["GET", "POST"])
@@ -157,7 +164,7 @@ def admin_dashboard():
     if request.method == 'POST':
         selected_users = request.form.getlist('approve_user')
         if selected_users:
-            con = sqlite3.connect('sea-assignment/database.db')
+            con = sqlite3.connect('database.db')
             cur = con.cursor()
 
             for username in selected_users:
@@ -170,7 +177,7 @@ def admin_dashboard():
         else:
             print('No users selected for approval.')
 
-    con = sqlite3.connect('sea-assignment/database.db')
+    con = sqlite3.connect('database.db')
     cur = con.cursor()
     cur.execute("SELECT * FROM users WHERE user_type = 'regular' AND approved = 0")
     pending_users = cur.fetchall()
@@ -186,12 +193,14 @@ def admin_dashboard():
 @app.route('/admin/televisions/edit', methods=['GET'])
 def edit_television():
     tv_id = request.args.get('tv_id')
-    conn = sqlite3.connect('sea-assignment/database.db')
+    conn = sqlite3.connect('database.db')
     cur = conn.cursor()
     cur.execute("SELECT * FROM Televisions WHERE tv_id = ?", (tv_id,))
     tv_record = cur.fetchone()
     conn.close()
-    return render_template('edit-televisions.html', tv_id=tv_id, brand=tv_record[1], audio=tv_record[2], resolution=tv_record[3], refresh_rate=tv_record[4], screen_size=tv_record[5])
+    return render_template('edit-televisions.html', tv_id=tv_id, brand=tv_record[1], audio=tv_record[2],
+                           resolution=tv_record[3], refresh_rate=tv_record[4], screen_size=tv_record[5])
+
 
 @app.route('/admin/televisions/edit/submit', methods=['POST'])
 def update_television_record():
@@ -204,12 +213,13 @@ def update_television_record():
         screen_size = request.form['screen_size']
 
         # Validate input using regex to prevent inappropriate characters
-        valid_chars_pattern = re.compile(r'^[a-zA-Z0-9\s\-.,\']+?$') 
-        if not valid_chars_pattern.match(brand + audio + resolution + refresh_rate + screen_size) or len(brand + audio + resolution + refresh_rate + screen_size) > 50:
+        valid_chars_pattern = re.compile(r'^[a-zA-Z0-9\s\-.,\']+?$')
+        if not valid_chars_pattern.match(brand + audio + resolution + refresh_rate + screen_size) or len(
+                brand + audio + resolution + refresh_rate + screen_size) > 50:
             return "Invalid characters or length detected."
 
         # Update the television record
-        conn = sqlite3.connect('sea-assignment/database.db')
+        conn = sqlite3.connect('database.db')
         cur = conn.cursor()
         cur.execute('''
             UPDATE Televisions
@@ -220,26 +230,31 @@ def update_television_record():
         conn.close()
 
         return redirect('/televisions')  # Redirect to the page displaying television records
-    
+
+
 @app.route('/admin/televisions/delete', methods=['GET'])
 def delete_television():
     tv_id = request.args.get('tv_id')
-    conn = sqlite3.connect('sea-assignment/database.db')
+    conn = sqlite3.connect('database.db')
     cur = conn.cursor()
     cur.execute("DELETE FROM Televisions WHERE tv_id = ?", (tv_id,))
     conn.commit()
     conn.close()
     return redirect('/televisions')
 
+
 @app.route('/admin/tests/edit', methods=['GET'])
 def edit_tests():
     test_id = request.args.get('test_id')
-    conn = sqlite3.connect('sea-assignment/database.db')
+    conn = sqlite3.connect('database.db')
     cur = conn.cursor()
     cur.execute("SELECT * FROM Tests WHERE test_id = ?", (test_id,))
     test_record = cur.fetchone()
     conn.close()
-    return render_template('edit-tests.html', test_id=test_id, test_name=test_record[1], duration=test_record[2], region=test_record[3], audio_test_type=test_record[4], playback_type=test_record[5], test_criteria=test_record[6], test_parameters=test_record[7])
+    return render_template('edit-tests.html', test_id=test_id, test_name=test_record[1], duration=test_record[2],
+                           region=test_record[3], audio_test_type=test_record[4], playback_type=test_record[5],
+                           test_criteria=test_record[6], test_parameters=test_record[7])
+
 
 @app.route('/admin/tests/edit/submit', methods=['POST'])
 def update_test_record():
@@ -255,8 +270,10 @@ def update_test_record():
         test_parameters = request.form['test_parameters']
 
         # Validate input using regex to prevent inappropriate characters
-        valid_chars_pattern = re.compile(r'^[a-zA-Z0-9\s\-.,\']+?$') 
-        if not valid_chars_pattern.match(test_name + duration + region + audio_test_type + playback_type + test_criteria + test_parameters) or len(test_name + duration + region + audio_test_type + playback_type + test_criteria + test_parameters) > 50:
+        valid_chars_pattern = re.compile(r'^[a-zA-Z0-9\s\-.,\']+?$')
+        if not valid_chars_pattern.match(
+                test_name + duration + region + audio_test_type + playback_type + test_criteria + test_parameters) or len(
+                test_name + duration + region + audio_test_type + playback_type + test_criteria + test_parameters) > 50:
             return "Invalid characters or length detected."
         else:
             print("huh")
@@ -265,10 +282,8 @@ def update_test_record():
         if not re.match(r'^\d{1,5}(\.\d{1,2})?$', duration):
             return "Invalid duration value."
 
-
-
         # Update the test record
-        conn = sqlite3.connect('sea-assignment/database.db')
+        conn = sqlite3.connect('database.db')
         cur = conn.cursor()
         cur.execute('''
             UPDATE Tests
@@ -279,16 +294,18 @@ def update_test_record():
         conn.close()
 
         return redirect('/tests')  # Redirect to the page displaying test records
-    
+
+
 @app.route('/admin/tests/delete', methods=['GET'])
 def delete_test():
     test_id = request.args.get('test_id')
-    conn = sqlite3.connect('sea-assignment/database.db')
+    conn = sqlite3.connect('database.db')
     cur = conn.cursor()
     cur.execute("DELETE FROM Tests WHERE test_id = ?", (test_id,))
     conn.commit()
     conn.close()
     return redirect('/tests')
+
 
 @app.route('/logout')
 def logout():

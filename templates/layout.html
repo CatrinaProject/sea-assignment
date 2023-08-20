@@ -1,6 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
-    <body>
-        {% block body %}{% endblock %}
-    </body>
-</html>
+<head>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <nav>
+        <a href="/logout">Logout</a>
+    </nav>
+    {% block body %}{% endblock %}
+    {% block scripts %}
+    <script>
+        function validateInput(inputElement, buttonElementId) {
+            const validCharsPattern = /^[a-zA-Z0-9\s\-.,']+$/;
+            const errorMessageElement = document.getElementById('error-message');
+            const submitButton = document.getElementById(buttonElementId);
+
+            if (!validCharsPattern.test(inputElement.value) || inputElement.value.length > 50) {
+                errorMessageElement.textContent = 'Invalid characters or too long (max 50 characters).';
+                submitButton.disabled = true;
+            } else {
+                errorMessageElement.textContent = '';
+                submitButton.disabled = false;
+            }
+        }
+    </script>
+
+    <script>
+        function validateDuration(inputElement, buttonElementId) {
+            validateInput(inputElement, buttonElementId)
+            const durationValue = inputElement.value;
+            const errorMessageElement = document.getElementById('error-message');
+            const addRecordButton = document.getElementById(buttonElementId);
+
+            // Regular expression to match valid decimal numbers with up to 5 digits and 3 decimal places
+            const decimalRegex = /^\d{1,5}(\.\d{1,2})?$/;
+
+            if (!decimalRegex.test(durationValue) || durationValue <= 0) {
+                errorMessageElement.textContent = 'Invalid Decimal. Max 5 digits, 2 decimal places.';
+                addRecordButton.disabled = true;
+            } else {
+                errorMessageElement.textContent = '';
+                addRecordButton.disabled = false;
+            }
+        }
+    </script>
+
+    <script>
+        function validateUsername(inputElement, buttonElementId ) {
+            validateInput(inputElement, buttonElementId)
+            const usernameValue = inputElement.value;
+            const errorMessageElement = document.getElementById('error-message');
+            const submitButton = document.getElementById(buttonElementId);
+
+            // Regular expression to match valid usernames (at least 5 letters, no numbers)
+            const usernameRegex = /^[a-zA-Z]{5,}$/;
+
+            if (!usernameRegex.test(usernameValue)) {
+                errorMessageElement.textContent = "Invalid username. Must be at least 5 letters and no numbers. OR Invalid characters/length (max 50 characters).";
+                submitButton.disabled = true;
+            } else {
+                errorMessageElement.textContent = '';
+                submitButton.disabled = false;
+            }
+        }
+    </script>
+
+    <script>
+        function validatePassword(inputElement, buttonElementId) {
+            const passwordValue = inputElement.value;
+            const errorMessageElement = document.getElementById('password-error-message');
+            const submitButton = document.getElementById(buttonElementId);
+
+            // Regular expressions for password criteria
+            const lengthRegex = /.{5,}/;
+            const uppercaseRegex = /[A-Z]/;
+            const lowercaseRegex = /[a-z]/;
+            const digitRegex = /\d/;
+            const specialCharRegex = /[!@#$%^&*()_+{}\[\]:;<>,.?~\-]/;
+
+            const isLengthValid = lengthRegex.test(passwordValue);
+            const isUppercaseValid = uppercaseRegex.test(passwordValue);
+            const isLowercaseValid = lowercaseRegex.test(passwordValue);
+            const isDigitValid = digitRegex.test(passwordValue);
+            const isSpecialCharValid = specialCharRegex.test(passwordValue);
+
+            if (
+                !isLengthValid ||
+                !isUppercaseValid ||
+                !isLowercaseValid ||
+                !isDigitValid ||
+                !isSpecialCharValid
+            ) {
+                const requirements = [
+                    'Minimum length of 5 characters.',
+                    'At least one uppercase letter.',
+                    'At least one lowercase letter.',
+                    'At least one digit (number).',
+                    'At least one special character (non-alphanumeric).'
+                ];
+                errorMessageElement.textContent = 'Invalid password. Must meet the following criteria: ' + requirements.join('\n');
+                submitButton.disabled = true;
+            } else {
+                errorMessageElement.textContent = '';
+                submitButton.disabled = false;
+            }
+        }
+    </script>
+    {% endblock %}
+</body>

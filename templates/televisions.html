@@ -1,6 +1,6 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 <head>
+    {% block head %}
     <title>Television Records</title>
     <style>
         table {
@@ -20,63 +20,50 @@
             gap: 10px;
         }
     </style>
-    <script>
-        function validateInput(inputElement) {
-            var validCharsPattern = /^[a-zA-Z0-9\s\-.,']+$/; 
-            var errorMessageElement = document.getElementById('error-message');
-            var addRecordButton = document.getElementById('add-record-button');
-            
-            if (!validCharsPattern.test(inputElement.value) || inputElement.value.length > 50) {
-                errorMessageElement.textContent = 'Invalid characters or too long (max 50 characters).';
-                addRecordButton.disabled = true;
-            } else {
-                errorMessageElement.textContent = '';
-                addRecordButton.disabled = false;
-            }
-        }
-    </script> 
+    {% endblock %}
 </head>
 <body>
-    <h2>Television Records</h2>
-    <table>
-        <tr>
-            <th>TV ID</th>
-            <th>Brand</th>
-            <th>Audio</th>
-            <th>Resolution</th>
-            <th>Refresh Rate</th>
-            <th>Screen Size</th>
-            <th>Actions</th>
-        </tr>
-        {% for tv in television_results %}
+    {% block body %}
+        <h2>Television Records</h2>
+        <table>
             <tr>
-                <td>{{ tv[0] }}</td>
-                <td>{{ tv[1] }}</td>
-                <td>{{ tv[2] }}</td>
-                <td>{{ tv[3] }}</td>
-                <td>{{ tv[4] }}</td>
-                <td>{{ tv[5] }}</td>
-                <td class="actions">
-                    <a href="/admin/televisions/edit?tv_id={{ tv[0] }}">Edit</a>
-                    <a href="/admin/televisions/delete?tv_id={{ tv[0] }}">Delete</a>
-                </td>
+                <th>TV ID</th>
+                <th>Brand</th>
+                <th>Audio</th>
+                <th>Resolution</th>
+                <th>Refresh Rate</th>
+                <th>Screen Size</th>
+                <th>Actions</th>
             </tr>
-        {% endfor %}
-    </table>
-    <form method="post" action="/televisions/add">
-        <div id="error-message" style="color: red;"></div>
-        <input type="hidden" name="tv_id" value="{{ tv_id }}">
-        <label for="brand">Brand:</label>
-        <input type="text" name="brand" value="{{ brand }}" required oninput="validateInput(this)"><br>
-        <label for="audio">Audio:</label>
-        <input type="text" name="audio" value="{{ audio }}" required oninput="validateInput(this)"><br>
-        <label for="resolution">Resolution:</label>
-        <input type="text" name="resolution" value="{{ resolution }}" required oninput="validateInput(this)"><br>
-        <label for="refresh_rate">Refresh Rate:</label>
-        <input type="text" name="refresh_rate" value="{{ refresh_rate }}" required oninput="validateInput(this)"><br>
-        <label for="screen_size">Screen Size:</label>
-        <input type="text" name="screen_size" value="{{ screen_size }}" required oninput="validateInput(this)"><br>
-        <button type="submit" id="add-record-button">Add new record</button>
-    </form>
+            {% for tv in television_results %}
+                <tr>
+                    <td>{{ tv[0] }}</td>
+                    <td>{{ tv[1] }}</td>
+                    <td>{{ tv[2] }}</td>
+                    <td>{{ tv[3] }}</td>
+                    <td>{{ tv[4] }}</td>
+                    <td>{{ tv[5] }}</td>
+                    <td class="actions">
+                        <a href="/admin/televisions/edit?tv_id={{ tv[0] }}">Edit</a>
+                        <a href="/admin/televisions/delete?tv_id={{ tv[0] }}">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        <form method="post" action="/televisions/add">
+            <div id="error-message" style="color: red;"></div>
+            <input type="hidden" name="tv_id" value="{{ tv_id }}">
+            <label for="brand">Brand:</label>
+            <input type="text" name="brand" value="{{ brand }}" required oninput="validateInput(this, 'add-record-button')"><br>
+            <label for="audio">Audio:</label>
+            <input type="text" name="audio" value="{{ audio }}" required oninput="validateInput(this, 'add-record-button')"><br>
+            <label for="resolution">Resolution:</label>
+            <input type="text" name="resolution" value="{{ resolution }}" required oninput="validateInput(this, 'add-record-button')"><br>
+            <label for="refresh_rate">Refresh Rate:</label>
+            <input type="text" name="refresh_rate" value="{{ refresh_rate }}" required oninput="validateInput(this, 'add-record-button')"><br>
+            <label for="screen_size">Screen Size:</label>
+            <input type="text" name="screen_size" value="{{ screen_size }}" required oninput="validateInput(this, 'add-record-button')"><br>
+            <button type="submit" id="add-record-button">Add new record</button>
+        </form>
+    {% endblock %}
 </body>
-</html>

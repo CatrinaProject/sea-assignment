@@ -1,15 +1,23 @@
 {% extends "layout.html" %}
+<head>
+    {% block head %}
+    <title>Registration</title>
+    {% endblock %}
+</head>
+<body>
+    {% block body %}
+    <h3>Please register a new username and password below: </h3>
+    <form action="/register" method="post">
+        <label for="Username"> Username </label>
+        <input type="text" id= "Password" name="username" required oninput="validateUsername(this, 'submit-button');">
 
-{% block body %}
-<form action="/register" method="post">
-    <label for="Username"> Username </label>
-    <input type="text" id="Username" name="username">
-
-    <label for="Password"> Password </label>
-    <input type="text" id="Password" name="password">
-
-    <button type="submit"> Register </button>
-</form>
+        <label for="Password"> Password </label>
+        <input type="text" id="Password" name="password" required oninput="validatePassword(this, 'submit-button')">
 
 
-{% endblock %}
+        <button type="submit" id="submit-button"> Register </button>
+    </form>
+        <div id="error-message" style="color: red;"></div>
+        <div id="password-error-message" style="color: gray;"></div>
+    {% endblock %}
+</body>

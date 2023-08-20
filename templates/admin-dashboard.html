@@ -1,29 +1,65 @@
 {% extends "layout.html" %}
+<head>
+    {% block head %}
+        <title>Admin Dashboard</title>
+        <style>
+            table {
+                width: 50%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
+            }
 
-{% block body %}
+            th, td {
+                border: 1px solid black;
+                padding: 8px;
+                text-align: left;
+            }
 
-<h2>Admin Approvals</h2>
-<form method="post">
-    <ul>
-        {% for user in pending_users %}
-            <li>
-                {{ user[1] }}
-                <input type="checkbox" name="approve_user" value="{{ user[1] }}"> Approve
-            </li>
-        {% endfor %}
-    </ul>
-    <button type="submit">Submit</button>
-</form>
+            th {
+                background-color: #f2f2f2;
+            }
 
-<h2>Admins</h2>
-<form method="post">
-    <ul>
-        {% for user in admins %}
-            <li>
-                {{ user[1] }}
-            </li>
-        {% endfor %}
-    </ul>
-</form>
+            .approve-column {
+                width: 10%;
+            }
 
-{% endblock %}
+            .name-column {
+                width: 90%;
+            }
+        </style>
+    {% endblock %}
+</head>
+<body>
+    {% block body %}
+        <h2>Admin Approvals</h2>
+        <form method="post">
+            <table>
+                <tr>
+                    <th class="name-column">Name</th>
+                    <th class="approve-column">Approve</th>
+                </tr>
+                {% for user in pending_users %}
+                    <tr>
+                        <td class="name-column">{{ user[1] }}</td>
+                        <td class="approve-column"><input type="checkbox" name="approve_user" value="{{ user[1] }}"></td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <button type="submit">Submit</button>
+        </form>
+
+        <h2>Admins</h2>
+        <table>
+            <tr>
+                <th class="name-column">Name</th>
+            </tr>
+            {% for user in admins %}
+                <tr>
+                    <td class="name-column">{{ user[1] }}</td>
+                </tr>
+    {% endfor %}
+</table>
+
+
+    {% endblock %}
+</body>

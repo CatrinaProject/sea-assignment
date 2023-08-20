@@ -1,24 +1,11 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 <head>
+    {% block head %}
     <title>Edit Television</title>
-    <script>
-        function validateInput(inputElement) {
-            var validCharsPattern = /^[a-zA-Z0-9\s\-.,']+$/; 
-            var errorMessageElement = document.getElementById('error-message');
-            var saveButton = document.getElementById('save-button');
-            
-            if (!validCharsPattern.test(inputElement.value) || inputElement.value.length > 50) {
-                errorMessageElement.textContent = 'Invalid characters or too long (max 50 characters).';
-                saveButton.disabled = true;
-            } else {
-                errorMessageElement.textContent = '';
-                saveButton.disabled = false;
-            }
-        }
-    </script>
+    {% endblock %}
 </head>
 <body>
+    {% block body %}
     <h2>Edit Television</h2>
     <div id="error-message" style="color: red;"></div>
     <form method="post" action="/admin/televisions/edit/submit">
@@ -35,5 +22,5 @@
         <input type="text" name="screen_size" value="{{ screen_size }}" required oninput="validateInput(this)"><br>
         <button type="submit" id="save-button">Save Changes</button>
     </form>
+    {% endblock %}
 </body>
-</html>
