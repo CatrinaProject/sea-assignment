@@ -7,9 +7,37 @@
     <nav>
         <a href="/logout">Logout</a>
     </nav>
+    {% if 'error_banner' in session %}
+        <div id="error-banner" style="color: red;">{{ session['error_banner'] }}</div>
+        {% set _ = session.pop('error_banner') %}
+    {% endif %}
+    {% if 'success_message' in session %}
+        <div id="success-banner" style="color: green;">{{ session['success_message'] }}</div>
+    {% endif %}
     {% block body %}{% endblock %}
     {% block scripts %}
+
     <script>
+
+        // Confirm banner shown to confirm whether the user wants to save their changes to the record
+        function confirmAction() {
+            return confirm(`Are you sure you want to save these changes?`);
+        }
+
+        // Confirm banner shown to confirm whether the user wants to delete the Test record
+        function confirmDeleteTest(testId) {
+            if (confirm("Are you sure you want to delete this test?")) {
+                window.location.href = "/admin/tests/delete?test_id=" + testId;
+            }
+        }
+
+        // Confirm banner shown to confirm whether the user wants to delete the TV record
+        function confirmDeleteTv(tvId) {
+            if (confirm("Are you sure you want to delete this television record?")) {
+                window.location.href = "/admin/televisions/delete?tv_id=" + tvId;
+            }
+        }
+
         // Validates that the input does not have special characters and is not more than 50 characters
         function validateInput(inputElement, buttonElementId) {
             const validCharsPattern = /^[a-zA-Z0-9\s\-.,']+$/;
@@ -25,9 +53,7 @@
                 submitButton.disabled = false;
             }
         }
-    </script>
 
-    <script>
         // Validates that the duration is a legitimate decimal number
         function validateDuration(inputElement, buttonElementId) {
             validateInput(inputElement, buttonElementId)
@@ -47,9 +73,7 @@
                 addRecordButton.disabled = false;
             }
         }
-    </script>
 
-    <script>
         // Validates that username follows requirements
         function validateUsername(inputElement, buttonElementId ) {
             validateInput(inputElement, buttonElementId)  // Uses the input validation common to all pages
@@ -69,9 +93,7 @@
                 submitButton.disabled = false;
             }
         }
-    </script>
 
-    <script>
         // Validates the password follows the requirements below
         function validatePassword(inputElement, buttonElementId) {
             const passwordValue = inputElement.value;

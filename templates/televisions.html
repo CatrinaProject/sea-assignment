@@ -45,7 +45,7 @@
                     <td>{{ tv[5] }}</td>
                     <td class="actions">
                         <a href="/admin/televisions/edit?tv_id={{ tv[0] }}">Edit</a>
-                        <a href="/admin/televisions/delete?tv_id={{ tv[0] }}">Delete</a>
+                        <a href="#" onclick="confirmDeleteTv('{{ tv[0] }}')">Delete</a>
                     </td>
                 </tr>
             {% endfor %}

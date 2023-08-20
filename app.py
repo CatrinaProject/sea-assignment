@@ -57,7 +57,8 @@ def validate_bad_chars(params):
 def check_admin_route():
     if request.path.startswith('/admin'):
         if not is_admin():
-            return redirect('/home')
+            session['error_banner'] = "Sorry, you must be an admin to perform this action. Please contact an admin."
+            return redirect("/home")
 
 
 @app.route("/")  # Main route: renders the login page
@@ -112,14 +113,20 @@ def televisions():
     return render_template('televisions.html', television_results=television_results)
 
 
+def extract_television_form_values(tv_request):
+    return {
+        'brand': tv_request.form['brand'],
+        'audio': tv_request.form['audio'],
+        'resolution': tv_request.form['resolution'],
+        'refresh_rate': tv_request.form['refresh_rate'],
+        'screen_size': tv_request.form['screen_size']
+    }
+
+
 @app.route('/televisions/add', methods=['POST'])  # Route to add a new television record
 def add_television_record():
     if request.method == 'POST':
-        brand = request.form['brand']
-        audio = request.form['audio']
-        resolution = request.form['resolution']
-        refresh_rate = request.form['refresh_rate']
-        screen_size = request.form['screen_size']
+        form_values = extract_television_form_values(request)
 
         # Insert new television record with parameters submitted by the user
         conn = sqlite3.connect('database.db')
@@ -127,7 +134,8 @@ def add_television_record():
         cur.execute('''
             INSERT INTO Televisions (brand, audio, resolution, refresh_rate, screen_size)
             VALUES (?, ?, ?, ?, ?)
-        ''', (brand, audio, resolution, refresh_rate, screen_size))
+        ''', (form_values['brand'], form_values['audio'], form_values['resolution'],
+              form_values['refresh_rate'], form_values['screen_size']))
         conn.commit()
         conn.close()
 
@@ -146,15 +154,15 @@ def tests():
     return render_template('tests.html', test_cases=test_cases)
 
 
-def extract_tests_form_values(request):
+def extract_tests_form_values(test_request):
     return {
-        'test_name': request.form['test_name'],
-        'duration': request.form['duration'],
-        'region': request.form['region'],
-        'audio_test_type': request.form['audio_test_type'],
-        'playback_type': request.form['playback_type'],
-        'test_criteria': request.form['test_criteria'],
-        'test_parameters': request.form['test_parameters']
+        'test_name': test_request.form['test_name'],
+        'duration': test_request.form['duration'],
+        'region': test_request.form['region'],
+        'audio_test_type': test_request.form['audio_test_type'],
+        'playback_type': test_request.form['playback_type'],
+        'test_criteria': test_request.form['test_criteria'],
+        'test_parameters': test_request.form['test_parameters']
     }
 
 
@@ -170,7 +178,7 @@ def add_test_record():
             INSERT INTO Tests (
                         test_name, duration, region, audio_test_type, playback_type, test_criteria, test_parameters
                         )
-            VALUES (?, ?, ?, ?, ?) ''',
+            VALUES (?, ?, ?, ?, ?, ?, ?) ''',
                     (form_values['test_name'], form_values['duration'], form_values['region'],
                      form_values['audio_test_type'], form_values['playback_type'], form_values['test_criteria'],
                      form_values['test_parameters']))
@@ -228,14 +236,11 @@ def edit_television():
 @app.route('/admin/televisions/edit/submit', methods=['POST'])  # Route to edit a television record
 def update_television_record():
     if request.method == 'POST':
-        tv_id = request.form['tv_id']
-        brand = request.form['brand']
-        audio = request.form['audio']
-        resolution = request.form['resolution']
-        refresh_rate = request.form['refresh_rate']
-        screen_size = request.form['screen_size']
+        form_values = extract_television_form_values(request)
 
-        validate_bad_chars(params=brand + audio + resolution + refresh_rate + screen_size)
+        validate_bad_chars(params=form_values['brand'] + form_values['audio'] +
+                                  form_values['resolution'] + form_values['refresh_rate'] +
+                                  form_values['screen_size'])
 
         # Update the television record
         conn = sqlite3.connect('database.db')
@@ -244,7 +249,8 @@ def update_television_record():
             UPDATE Televisions
             SET brand=?, audio=?, resolution=?, refresh_rate=?, screen_size=?
             WHERE tv_id=?
-        ''', (brand, audio, resolution, refresh_rate, screen_size, tv_id))
+        ''', (form_values['brand'], form_values['audio'], form_values['resolution'],
+              form_values['refresh_rate'], form_values['screen_size'], request.form['tv_id']))
         conn.commit()
         conn.close()
 
@@ -279,20 +285,15 @@ def edit_tests():
 def update_test_record():
     is_admin()
     if request.method == 'POST':
-        test_id = request.form['test_id']
-        test_name = request.form['test_name']
-        duration = request.form['duration']
-        region = request.form['region']
-        audio_test_type = request.form['audio_test_type']
-        playback_type = request.form['playback_type']
-        test_criteria = request.form['test_criteria']
-        test_parameters = request.form['test_parameters']
+        form_values = extract_tests_form_values(request)
 
         validate_bad_chars(
-            params=test_name + duration + region + audio_test_type + playback_type + test_criteria + test_parameters)
+            params=form_values['test_name'] + form_values['duration'] + form_values['region']
+                   + form_values['audio_test_type'] + form_values['playback_type'] + form_values['test_criteria']
+                   + form_values['test_parameters'])
 
         # Validate duration as a decimal with up to 2 decimal places and a total of 5 digits
-        if not re.match(r'^\d{1,5}(\.\d{1,2})?$', duration):
+        if not re.match(r'^\d{1,5}(\.\d{1,2})?$', form_values['duration']):
             return "Invalid duration value."
 
         # Update the test record
@@ -300,12 +301,13 @@ def update_test_record():
         cur = conn.cursor()
         cur.execute('''
             UPDATE Tests
-            SET test_name=?, duration=?, region=?, audio_test_type=?, playback_type=?, test_criteria=?, test_parameters=?
-            WHERE test_id=?
-        ''', (test_name, duration, region, audio_test_type, playback_type, test_criteria, test_parameters, test_id))
+            SET test_name=?, duration=?, region=?, audio_test_type=?, playback_type=?, test_criteria=?, 
+            test_parameters=? WHERE test_id=? 
+            ''', (form_values['test_name'], form_values['duration'], form_values['region'],
+                  form_values['audio_test_type'], form_values['playback_type'], form_values['test_criteria'],
+                  form_values['test_parameters'], request.form['test_id']))
         conn.commit()
         conn.close()
-
         return redirect('/tests')  # Redirect to the page displaying test records
 
 
