@@ -8,7 +8,7 @@
     {% block body %}
     <h2>Edit Test</h2>
     <div id="error-message" style="color: red;"></div>
-    <form method="post" action="/admin/tests/edit/submit" onsubmit="return confirmAction()">
+    <form method="post" action="/tests/edit/submit" onsubmit="return confirmAction()">
         <input type="hidden" name="test_id" value="{{ test_id }}">
         <label for="test_name">Test Name:</label>
         <input type="text" name="test_name" value="{{ test_name }}" required oninput="validateInput(this, 'save-button')"><br>

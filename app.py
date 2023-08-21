@@ -102,12 +102,12 @@ def television_delete_route():
     return delete_television()
 
 
-@app.route('/admin/tests/edit', methods=['GET'])  # Route to load the 'edit a test record' page
+@app.route('/tests/edit', methods=['GET'])  # Route to load the 'edit a test record' page
 def tests_edit_route():
     return edit_tests()
 
 
-@app.route('/admin/tests/edit/submit', methods=['POST'])  # Route to edit a test record
+@app.route('/tests/edit/submit', methods=['POST'])  # Route to edit a test record
 def tests_edit_submit_route():
     return update_test_record()
 

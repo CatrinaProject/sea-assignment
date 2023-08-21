@@ -1,6 +1,6 @@
 import sqlite3
 import re
-from flask import redirect, render_template, request
+from flask import redirect, render_template, request, session
 from helpers import validate_bad_chars, is_admin
 
 
@@ -47,6 +47,9 @@ def add_test_record():
                     (form_values['test_name'], form_values['duration'], form_values['region'],
                      form_values['audio_test_type'], form_values['playback_type'], form_values['test_criteria'],
                      form_values['test_parameters']))
+
+        session['last_added_test_id'] = cur.lastrowid
+
         conn.commit()
         conn.close()
 
@@ -60,13 +63,17 @@ def edit_tests():
     cur.execute("SELECT * FROM Tests WHERE test_id = ?", (test_id,))
     test_record = cur.fetchone()
     conn.close()
-    return render_template('edit-tests.html', test_id=test_id, test_name=test_record[1], duration=test_record[2],
-                           region=test_record[3], audio_test_type=test_record[4], playback_type=test_record[5],
-                           test_criteria=test_record[6], test_parameters=test_record[7])
+
+    if is_admin() or (session.get('last_added_test_id') and session['last_added_test_id'] == int(test_id)):
+        return render_template('edit-tests.html', test_id=test_id, test_name=test_record[1], duration=test_record[2],
+                               region=test_record[3], audio_test_type=test_record[4], playback_type=test_record[5],
+                               test_criteria=test_record[6], test_parameters=test_record[7])
+    else:
+        session['error_banner'] = "Sorry, you don't have permission to edit this record."
+        return redirect("/home")
 
 
 def update_test_record():
-    is_admin()
     if request.method == 'POST':
         form_values = extract_tests_form_values(request)
 
