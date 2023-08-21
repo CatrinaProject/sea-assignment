@@ -5,7 +5,10 @@
 </head>
 <body>
     <nav>
-        <a href="/logout">Logout</a>
+        {% if session['username'] %}
+            <a href="/logout">Logout</a>
+            <a href="/home">Home</a>
+        {% endif %}
     </nav>
     {% if 'error_banner' in session %}
         <div id="error-banner" style="color: red;">{{ session['error_banner'] }}</div>

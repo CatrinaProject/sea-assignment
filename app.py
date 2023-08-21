@@ -119,7 +119,7 @@ def test_delete_route():
 
 @app.route('/logout')  # Logout route: logs the user out by clearing session
 def logout():
-    session['username'] = None
+    session.clear()
     return redirect("/")
 
 
