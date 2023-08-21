@@ -1,6 +1,6 @@
 import sqlite3
-from flask import redirect, render_template, request
-from helpers import validate_bad_chars
+from flask import redirect, render_template, request, session
+from helpers import validate_bad_chars, is_admin
 
 
 def extract_television_form_values(tv_request):
@@ -39,6 +39,8 @@ def add_television_record():
             VALUES (?, ?, ?, ?, ?)
         ''', (form_values['brand'], form_values['audio'], form_values['resolution'],
               form_values['refresh_rate'], form_values['screen_size']))
+
+        session['last_added_tv_id'] = cur.lastrowid
         conn.commit()
         conn.close()
 
@@ -53,8 +55,13 @@ def edit_television():
     cur.execute("SELECT * FROM Televisions WHERE tv_id = ?", (tv_id,))
     tv_record = cur.fetchone()
     conn.close()
-    return render_template('edit-televisions.html', tv_id=tv_id, brand=tv_record[1], audio=tv_record[2],
-                           resolution=tv_record[3], refresh_rate=tv_record[4], screen_size=tv_record[5])
+
+    if is_admin() or (session.get('last_added_tv_id') and session['last_added_tv_id'] == int(tv_id)):
+        return render_template('edit-televisions.html', tv_id=tv_id, brand=tv_record[1], audio=tv_record[2],
+                               resolution=tv_record[3], refresh_rate=tv_record[4], screen_size=tv_record[5])
+    else:
+        session['error_banner'] = "Sorry, you don't have permission to edit this record."
+        return redirect("/home")
 
 
 def delete_television():

@@ -8,7 +8,7 @@
     {% block body %}
     <h2>Edit Television</h2>
     <div id="error-message" style="color: red;"></div>
-    <form method="post" action="/admin/televisions/edit/submit" onsubmit="return confirmAction()">
+    <form method="post" action="/televisions/edit/submit" onsubmit="return confirmAction()">
         <input type="hidden" name="tv_id" value="{{ tv_id }}">
         <label for="brand">Brand:</label>
         <input type="text" name="brand" value="{{ brand }}" required oninput="validateInput(this)"><br>

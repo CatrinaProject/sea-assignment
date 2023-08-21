@@ -15,6 +15,9 @@
         th {
             background-color: #f2f2f2;
         }
+        .new-tv {
+            background-color: lightcyan;
+        }
         .actions {
             display: flex;
             gap: 10px;
@@ -36,7 +39,7 @@
                 <th>Actions</th>
             </tr>
             {% for tv in television_results %}
-                <tr>
+                <tr {% if tv[0] == session.last_added_tv_id %} class="new-tv" {% endif %}>
                     <td>{{ tv[0] }}</td>
                     <td>{{ tv[1] }}</td>
                     <td>{{ tv[2] }}</td>
@@ -44,7 +47,7 @@
                     <td>{{ tv[4] }}</td>
                     <td>{{ tv[5] }}</td>
                     <td class="actions">
-                        <a href="/admin/televisions/edit?tv_id={{ tv[0] }}">Edit</a>
+                        <a href="/televisions/edit?tv_id={{ tv[0] }}">Edit</a>
                         <a href="#" onclick="confirmDeleteTv('{{ tv[0] }}')">Delete</a>
                     </td>
                 </tr>

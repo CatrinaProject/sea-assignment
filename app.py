@@ -12,7 +12,7 @@ app = Flask(__name__)
 app.secret_key = "ee3rs2"
 
 
-@app.before_request  # Before each request, check if the user is an admin when accessing a /admin route
+@app.before_request # If /admin routes are clicked on the check_if_admin route. Strictly only admins have permission.
 def check_admin_route():
     if request.path.startswith('/admin'):
         if not is_admin():
@@ -71,6 +71,21 @@ def televisions_add_roue():
     return add_television_record()
 
 
+@app.route('/televisions/edit', methods=['GET'])  # Route to load the 'edit a television record' page
+def televisions_edit_route():
+    return edit_television()
+
+
+@app.route('/televisions/edit/submit', methods=['POST'])  # Route to edit a television record
+def televisions_edit_submit_route():
+    return update_television_record()
+
+
+@app.route('/admin/televisions/delete', methods=['GET'])  # Route to delete a television record
+def television_delete_route():
+    return delete_television()
+
+
 @app.route('/tests', methods=['GET'])  # Route to display a list of tests
 def tests_route():
     return tests()
@@ -79,27 +94,6 @@ def tests_route():
 @app.route('/tests/add', methods=['POST'])  # Route to add a new test record
 def tests_add_route():
     return add_test_record()
-
-
-# ADMIN FUNCTIONALITY: The following admin/ routes will call the check_if_admin route. Only admins have permission.
-@app.route('/admin/dashboard', methods=["GET", "POST"])  # Admin dashboard route: displays pending users and admin users
-def admin_approval_dashboard_route():
-    return admin_dashboard()
-
-
-@app.route('/admin/televisions/edit', methods=['GET'])  # Route to load the 'edit a television record' page
-def televisions_edit_route():
-    return edit_television()
-
-
-@app.route('/admin/televisions/edit/submit', methods=['POST'])  # Route to edit a television record
-def televisions_edit_submit_route():
-    return update_television_record()
-
-
-@app.route('/admin/televisions/delete', methods=['GET'])  # Route to delete a television record
-def television_delete_route():
-    return delete_television()
 
 
 @app.route('/tests/edit', methods=['GET'])  # Route to load the 'edit a test record' page
@@ -115,6 +109,11 @@ def tests_edit_submit_route():
 @app.route('/admin/tests/delete', methods=['GET'])  # Route to delete a test record
 def test_delete_route():
     return delete_test()
+
+
+@app.route('/admin/dashboard', methods=["GET", "POST"])  # Admin dashboard route: displays pending users and admin users
+def admin_approval_dashboard_route():
+    return admin_dashboard()
 
 
 @app.route('/logout')  # Logout route: logs the user out by clearing session
