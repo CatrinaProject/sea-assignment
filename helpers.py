@@ -41,6 +41,8 @@ def is_admin():  # Checks whether the user is an admin
 def validate_bad_chars(params):
     # Validate input using regex to prevent inappropriate characters.
     # Although this is managed in front-end scripting it adds an extra layer of protection on the server side.
-    valid_chars_pattern = re.compile(r'^[a-zA-Z0-9\s\-.,\']+?$')
-    if not valid_chars_pattern.match(params) or len(params) > 50:
-        return "Invalid characters or length detected."
+
+    # Server-side validation using regex, must not contain special characters
+    if not re.match(r'^[a-zA-Z0-9\s\-.,\']+?$', params):
+        return "Invalid characters or length detected.", 400
+

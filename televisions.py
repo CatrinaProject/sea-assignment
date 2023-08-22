@@ -27,9 +27,12 @@ def add_television_record():
     if request.method == 'POST':
         form_values = extract_television_form_values(request)
 
-        validate_bad_chars(params=form_values['brand'] + form_values['audio'] +
-                                  form_values['resolution'] + form_values['refresh_rate'] +
-                                  form_values['screen_size'])
+        validation_result = validate_bad_chars(form_values['brand'] + form_values['audio'] +
+                                               form_values['resolution'] + form_values['refresh_rate'] +
+                                               form_values['screen_size'])
+
+        if validation_result is not None:
+            return validation_result  # Return the error message directly
 
         # Insert new television record with parameters submitted by the user
         conn = sqlite3.connect('database.db')
@@ -78,9 +81,12 @@ def update_television_record():
     if request.method == 'POST':
         form_values = extract_television_form_values(request)
 
-        validate_bad_chars(params=form_values['brand'] + form_values['audio'] +
-                                  form_values['resolution'] + form_values['refresh_rate'] +
-                                  form_values['screen_size'])
+        validation_result = validate_bad_chars(form_values['brand'] + form_values['audio'] +
+                                               form_values['resolution'] + form_values['refresh_rate'] +
+                                               form_values['screen_size'])
+
+        if validation_result is not None:
+            return validation_result  # Return the error message directly
 
         # Update the television record
         conn = sqlite3.connect('database.db')

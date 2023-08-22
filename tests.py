@@ -31,10 +31,11 @@ def add_test_record():
     if request.method == 'POST':
         form_values = extract_tests_form_values(request)
 
-        validate_bad_chars(
-            params=form_values['test_name'] + form_values['duration'] + form_values['region']
+        validation_result = validate_bad_chars(form_values['test_name'] + form_values['duration'] + form_values['region']
                    + form_values['audio_test_type'] + form_values['playback_type'] + form_values['test_criteria']
                    + form_values['test_parameters'])
+        if validation_result is not None:
+            return validation_result  # Return the error message directly
 
         # Insert new test record with parameters submitted by the user
         conn = sqlite3.connect('database.db')
@@ -77,10 +78,11 @@ def update_test_record():
     if request.method == 'POST':
         form_values = extract_tests_form_values(request)
 
-        validate_bad_chars(
-            params=form_values['test_name'] + form_values['duration'] + form_values['region']
+        validation_result = validate_bad_chars(form_values['test_name'] + form_values['duration'] + form_values['region']
                    + form_values['audio_test_type'] + form_values['playback_type'] + form_values['test_criteria']
                    + form_values['test_parameters'])
+        if validation_result is not None:
+            return validation_result  # Return the error message directly
 
         # Validate duration as a decimal with up to 2 decimal places and a total of 5 digits
         if not re.match(r'^\d{1,5}(\.\d{1,2})?$', form_values['duration']):
