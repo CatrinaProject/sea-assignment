@@ -13,6 +13,15 @@ def extract_television_form_values(tv_request):
     }
 
 
+def validate_television_results(form_values):
+    validation_result = validate_bad_chars(form_values['brand'] + form_values['audio'] +
+                                           form_values['resolution'] + form_values['refresh_rate'] +
+                                           form_values['screen_size'])
+
+    if validation_result is not None:
+        return validation_result  # Return the error message directly
+
+
 def televisions():
     con = sqlite3.connect('database.db')
     cur = con.cursor()
@@ -27,12 +36,8 @@ def add_television_record():
     if request.method == 'POST':
         form_values = extract_television_form_values(request)
 
-        validation_result = validate_bad_chars(form_values['brand'] + form_values['audio'] +
-                                               form_values['resolution'] + form_values['refresh_rate'] +
-                                               form_values['screen_size'])
-
-        if validation_result is not None:
-            return validation_result  # Return the error message directly
+        if validate_television_results(form_values) is not None:
+            return validate_television_results(form_values)
 
         # Insert new television record with parameters submitted by the user
         conn = sqlite3.connect('database.db')
@@ -81,12 +86,8 @@ def update_television_record():
     if request.method == 'POST':
         form_values = extract_television_form_values(request)
 
-        validation_result = validate_bad_chars(form_values['brand'] + form_values['audio'] +
-                                               form_values['resolution'] + form_values['refresh_rate'] +
-                                               form_values['screen_size'])
-
-        if validation_result is not None:
-            return validation_result  # Return the error message directly
+        if validate_television_results(form_values) is not None:
+            return validate_television_results(form_values)
 
         # Update the television record
         conn = sqlite3.connect('database.db')

@@ -46,3 +46,8 @@ def validate_bad_chars(params):
     if not re.match(r'^[a-zA-Z0-9\s\-.,\']+?$', params):
         return "Invalid characters or length detected.", 400
 
+
+def validate_decimal(duration):
+    # Validate duration as a decimal with up to 2 decimal places and a total of 5 digits
+    if not re.match(r'^\d{1,5}(\.\d{1,2})?$', duration):
+        return "Invalid duration value.", 400

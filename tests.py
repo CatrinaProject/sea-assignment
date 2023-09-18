@@ -1,7 +1,6 @@
 import sqlite3
-import re
 from flask import redirect, render_template, request, session
-from helpers import validate_bad_chars, is_admin
+from helpers import validate_bad_chars, is_admin, validate_decimal
 
 
 def extract_tests_form_values(test_request):
@@ -14,6 +13,18 @@ def extract_tests_form_values(test_request):
         'test_criteria': test_request.form['test_criteria'],
         'test_parameters': test_request.form['test_parameters']
     }
+
+
+def validate_test_results(form_values):
+    validation_result = validate_bad_chars(
+        form_values['test_name'] + form_values['duration'] + form_values['region']
+        + form_values['audio_test_type'] + form_values['playback_type'] + form_values['test_criteria']
+        + form_values['test_parameters'])
+    validate_duration = validate_decimal(form_values['duration'])
+    if validation_result is not None:
+        return validation_result  # Return the error message directly
+    elif validate_duration is not None:
+        return validate_duration
 
 
 def tests():
@@ -31,11 +42,8 @@ def add_test_record():
     if request.method == 'POST':
         form_values = extract_tests_form_values(request)
 
-        validation_result = validate_bad_chars(form_values['test_name'] + form_values['duration'] + form_values['region']
-                   + form_values['audio_test_type'] + form_values['playback_type'] + form_values['test_criteria']
-                   + form_values['test_parameters'])
-        if validation_result is not None:
-            return validation_result  # Return the error message directly
+        if validate_test_results(form_values) is not None:
+            return validate_test_results(form_values)
 
         # Insert new test record with parameters submitted by the user
         conn = sqlite3.connect('database.db')
@@ -78,15 +86,8 @@ def update_test_record():
     if request.method == 'POST':
         form_values = extract_tests_form_values(request)
 
-        validation_result = validate_bad_chars(form_values['test_name'] + form_values['duration'] + form_values['region']
-                   + form_values['audio_test_type'] + form_values['playback_type'] + form_values['test_criteria']
-                   + form_values['test_parameters'])
-        if validation_result is not None:
-            return validation_result  # Return the error message directly
-
-        # Validate duration as a decimal with up to 2 decimal places and a total of 5 digits
-        if not re.match(r'^\d{1,5}(\.\d{1,2})?$', form_values['duration']):
-            return "Invalid duration value."
+        if validate_test_results(form_values) is not None:
+            return validate_test_results(form_values)
 
         # Update the test record
         conn = sqlite3.connect('database.db')
