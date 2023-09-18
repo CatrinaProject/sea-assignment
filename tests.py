@@ -1,5 +1,5 @@
 import sqlite3
-from flask import redirect, render_template, request, session
+from flask import redirect, render_template, request, session, flash
 from helpers import validate_bad_chars, is_admin, validate_decimal
 
 
@@ -62,6 +62,7 @@ def add_test_record():
         conn.commit()
         conn.close()
 
+        flash("Successfully added a new test record", "success")
         return redirect('/tests')  # Redirect to the page displaying television records
 
 
@@ -78,8 +79,8 @@ def edit_tests():
                                region=test_record[3], audio_test_type=test_record[4], playback_type=test_record[5],
                                test_criteria=test_record[6], test_parameters=test_record[7])
     else:
-        session['error_banner'] = "Sorry, you don't have permission to edit this record."
-        return redirect("/home")
+        flash("Sorry, you don't have permission to edit this record.", "error")
+        return redirect("/tests")
 
 
 def update_test_record():
@@ -101,6 +102,7 @@ def update_test_record():
                   form_values['test_parameters'], request.form['test_id']))
         conn.commit()
         conn.close()
+        flash("Successfully updated a test record", "success")
         return redirect('/tests')  # Redirect to the page displaying test records
 
 
@@ -111,4 +113,5 @@ def delete_test():
     cur.execute("DELETE FROM Tests WHERE test_id = ?", (test_id,))
     conn.commit()
     conn.close()
+    flash("Successfully deleted a test record", "success")
     return redirect('/tests')

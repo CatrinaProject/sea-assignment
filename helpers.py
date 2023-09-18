@@ -1,6 +1,6 @@
 import sqlite3
 import re
-from flask import session
+from flask import session, flash, redirect, request
 
 
 def register_user_to_db(username, password):  # Registers new users to the database as a 'non-approved' regular user
@@ -49,5 +49,6 @@ def validate_bad_chars(params):
 
 def validate_decimal(duration):
     # Validate duration as a decimal with up to 2 decimal places and a total of 5 digits
+    # Although this is managed in front-end scripting it adds an extra layer of protection on the server side.
     if not re.match(r'^\d{1,5}(\.\d{1,2})?$', duration):
         return "Invalid duration value.", 400

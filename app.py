@@ -2,7 +2,7 @@
 # and interactions with the database to ensure the proper functioning of the application's features.
 
 import re
-from flask import Flask, redirect, render_template, request, session
+from flask import Flask, redirect, render_template, request, session, flash
 from helpers import register_user_to_db, check_user, is_admin
 from televisions import televisions, add_television_record, edit_television, update_television_record, delete_television
 from tests import tests, add_test_record, edit_tests, update_test_record, delete_test
@@ -16,7 +16,7 @@ app.secret_key = "ee3rs2"
 def check_admin_route():
     if request.path.startswith('/admin'):
         if not is_admin():
-            session['error_banner'] = "Sorry, you must be an admin to perform this action. Please contact an admin."
+            flash("Sorry, you must be an admin to perform this action. Please contact an admin.", "error")
             return redirect("/home")
 
 

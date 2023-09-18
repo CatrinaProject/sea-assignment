@@ -23,6 +23,7 @@ class AppTestCase(unittest.TestCase):
         expected_text = "Invalid username or password. Please try again."
         self.assertIn(expected_text.encode(), response.data)
 
+    # This test is commented out as the test fails if username 'TestA' already exists
     # def test_register_new_user(self):
     #     response = self.app.post('/register', data={'username': 'TestA', 'password': 'Pass123?'}, follow_redirects=True)
     #     self.assertEqual(response.status_code, 200)

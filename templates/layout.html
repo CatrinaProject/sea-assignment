@@ -11,13 +11,15 @@
             <a href="/home">Home</a>
         {% endif %}
     </nav>
-    {% if 'error_banner' in session %}
-        <div id="error-banner" style="color: red;">{{ session['error_banner'] }}</div>
-        {% set _ = session.pop('error_banner') %}
-    {% endif %}
-    {% if 'success_message' in session %}
-        <div id="success-banner" style="color: green;">{{ session['success_message'] }}</div>
-    {% endif %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class=flashes>
+            {% for category, message in messages %}
+                <div class="{{ category }}">{{ message }}</div>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
     {% block body %}{% endblock %}
     {% block scripts %}
 

@@ -1,5 +1,5 @@
 import sqlite3
-from flask import redirect, render_template, request, session
+from flask import redirect, render_template, request, session, flash
 from helpers import validate_bad_chars, is_admin
 
 
@@ -52,6 +52,7 @@ def add_television_record():
         conn.commit()
         conn.close()
 
+        flash('Successfully added a new television record', 'success')
         return redirect('/televisions')  # Redirect to the page displaying television records
 
 
@@ -68,7 +69,7 @@ def edit_television():
         return render_template('edit-televisions.html', tv_id=tv_id, brand=tv_record[1], audio=tv_record[2],
                                resolution=tv_record[3], refresh_rate=tv_record[4], screen_size=tv_record[5])
     else:
-        session['error_banner'] = "Sorry, you don't have permission to edit this record."
+        flash("Sorry, you don't have permission to edit this record.", "success")
         return redirect("/home")
 
 
@@ -79,6 +80,7 @@ def delete_television():
     cur.execute("DELETE FROM Televisions WHERE tv_id = ?", (tv_id,))
     conn.commit()
     conn.close()
+    flash("Successfully deleted television record", "success")
     return redirect('/televisions')
 
 
@@ -100,5 +102,5 @@ def update_television_record():
               form_values['refresh_rate'], form_values['screen_size'], request.form['tv_id']))
         conn.commit()
         conn.close()
-
+        flash("Successfully updated television record", "success")
         return redirect('/televisions')  # Redirect to the page displaying television records
