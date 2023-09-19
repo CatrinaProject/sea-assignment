@@ -110,5 +110,17 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(response.headers['Location'], 'http://localhost/televisions')
 
 
+# Create a test suite
+test_suite = unittest.TestLoader().loadTestsFromTestCase(AppTestCase)
+
+# Run the test suite
+test_runner = unittest.TextTestRunner()
+test_result = test_runner.run(test_suite)
+
+# Access results
+print("Number of tests run:", test_result.testsRun)
+print("Number of failures:", len(test_result.failures))
+print("Number of errors:", len(test_result.errors))
+
 if __name__ == '__main__':
     unittest.main()
