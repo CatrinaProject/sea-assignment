@@ -3,7 +3,7 @@ from flask import redirect, render_template, request, session, flash
 from helpers import validate_bad_chars, is_admin, validate_decimal
 
 
-def extract_tests_form_values(test_request):
+def extract_tests_form_values(test_request):  # Form a dictionary of values from the request
     return {
         'test_name': test_request.form['test_name'],
         'duration': test_request.form['duration'],
@@ -15,7 +15,7 @@ def extract_tests_form_values(test_request):
     }
 
 
-def validate_test_results(form_values):
+def validate_test_results(form_values):  # Pass the values in the dictionary into validation function
     validation_result = validate_bad_chars(
         form_values['test_name'] + form_values['duration'] + form_values['region']
         + form_values['audio_test_type'] + form_values['playback_type'] + form_values['test_criteria']
@@ -40,7 +40,7 @@ def tests():
 
 def add_test_record():
     if request.method == 'POST':
-        form_values = extract_tests_form_values(request)
+        form_values = extract_tests_form_values(request)  # Get a dictionary of values from the request
 
         if validate_test_results(form_values) is not None:
             return validate_test_results(form_values)
@@ -67,13 +67,15 @@ def add_test_record():
 
 
 def edit_tests():
-    test_id = request.args.get('test_id')
+    test_id = request.args.get('test_id')  # Get the test_id from the request
     conn = sqlite3.connect('database.db')
     cur = conn.cursor()
-    cur.execute("SELECT * FROM Tests WHERE test_id = ?", (test_id,))
+    cur.execute("SELECT * FROM Tests WHERE test_id = ?", (test_id,))  # Get the test details for the test_id
     test_record = cur.fetchone()
     conn.close()
 
+    # Check if the user is an admin OR if the last added test is the same in the session
+    # Then render the edit-tests page
     if is_admin() or (session.get('last_added_test_id') and session['last_added_test_id'] == int(test_id)):
         return render_template('edit-tests.html', test_id=test_id, test_name=test_record[1], duration=test_record[2],
                                region=test_record[3], audio_test_type=test_record[4], playback_type=test_record[5],
@@ -85,10 +87,10 @@ def edit_tests():
 
 def update_test_record():
     if request.method == 'POST':
-        form_values = extract_tests_form_values(request)
+        form_values = extract_tests_form_values(request)  # Get a dictionary of values from the request
 
         if validate_test_results(form_values) is not None:
-            return validate_test_results(form_values)
+            return validate_test_results(form_values)  # Validate those values in the dictionary
 
         # Update the test record
         conn = sqlite3.connect('database.db')
@@ -107,10 +109,10 @@ def update_test_record():
 
 
 def delete_test():
-    test_id = request.args.get('test_id')
+    test_id = request.args.get('test_id')  # Get the test_id from the request arguments
     conn = sqlite3.connect('database.db')
     cur = conn.cursor()
-    cur.execute("DELETE FROM Tests WHERE test_id = ?", (test_id,))
+    cur.execute("DELETE FROM Tests WHERE test_id = ?", (test_id,))  # Delete the test_id record from the table
     conn.commit()
     conn.close()
     flash("Successfully deleted a test record", "success")

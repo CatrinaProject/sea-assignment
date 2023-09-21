@@ -3,7 +3,7 @@ from flask import redirect, render_template, request, session, flash
 from helpers import validate_bad_chars, is_admin
 
 
-def extract_television_form_values(tv_request):
+def extract_television_form_values(tv_request):  # Form a dictionary of values from the request
     return {
         'brand': tv_request.form['brand'],
         'audio': tv_request.form['audio'],
@@ -13,7 +13,7 @@ def extract_television_form_values(tv_request):
     }
 
 
-def validate_television_results(form_values):
+def validate_television_results(form_values):  # Pass the values in the dictionary into validation function
     validation_result = validate_bad_chars(form_values['brand'] + form_values['audio'] +
                                            form_values['resolution'] + form_values['refresh_rate'] +
                                            form_values['screen_size'])
@@ -34,7 +34,7 @@ def televisions():
 
 def add_television_record():
     if request.method == 'POST':
-        form_values = extract_television_form_values(request)
+        form_values = extract_television_form_values(request)  # Get a dictionary of values from the request
 
         if validate_television_results(form_values) is not None:
             return validate_television_results(form_values)
@@ -65,6 +65,8 @@ def edit_television():
     tv_record = cur.fetchone()
     conn.close()
 
+    # Check if the user is an admin OR if the last added television is the same in the session
+    # Then render the edit-televisions page
     if is_admin() or (session.get('last_added_tv_id') and session['last_added_tv_id'] == int(tv_id)):
         return render_template('edit-televisions.html', tv_id=tv_id, brand=tv_record[1], audio=tv_record[2],
                                resolution=tv_record[3], refresh_rate=tv_record[4], screen_size=tv_record[5])
@@ -74,10 +76,10 @@ def edit_television():
 
 
 def delete_television():
-    tv_id = request.args.get('tv_id')
+    tv_id = request.args.get('tv_id')  # Get the tv_id
     conn = sqlite3.connect('database.db')
     cur = conn.cursor()
-    cur.execute("DELETE FROM Televisions WHERE tv_id = ?", (tv_id,))
+    cur.execute("DELETE FROM Televisions WHERE tv_id = ?", (tv_id,))  # Delete the tv_id record from the table
     conn.commit()
     conn.close()
     flash("Successfully deleted television record", "success")
@@ -86,10 +88,10 @@ def delete_television():
 
 def update_television_record():
     if request.method == 'POST':
-        form_values = extract_television_form_values(request)
+        form_values = extract_television_form_values(request)  # Get a dictionary of values from the request
 
         if validate_television_results(form_values) is not None:
-            return validate_television_results(form_values)
+            return validate_television_results(form_values)  # Validate those values in the dictionary
 
         # Update the television record
         conn = sqlite3.connect('database.db')

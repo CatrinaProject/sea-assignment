@@ -12,10 +12,10 @@ app = Flask(__name__)
 app.secret_key = "ee3rs2"
 
 
-@app.before_request  # If /admin routes are clicked on the check_if_admin route. Strictly only admins have permission.
+@app.before_request  # Before a each request, check whether the page is a /admin route
 def check_admin_route():
-    if request.path.startswith('/admin'):
-        if not is_admin():
+    if request.path.startswith('/admin'):  # If /admin routes are clicked on the check_if_admin route.
+        if not is_admin():  # If the session username is not an admin, flash the error message and redirect to home page
             flash("Sorry, you must be an admin to perform this action. Please contact an admin.", "error")
             return redirect("/home")
 
@@ -27,8 +27,8 @@ def index():
 
 @app.route('/register', methods=["POST", "GET"])  # Route for user registration
 def register():
-    if request.method == 'POST':
-        username = request.form['username']
+    if request.method == 'POST':  # When a "submit" (POST) request is made on the /register page
+        username = request.form['username']  # Get the username and password
         password = request.form['password']
 
         # Server-side validation for username using regex, must be alphabetical and less than 50 characters
@@ -50,30 +50,30 @@ def register():
 
         # Check if all requirements are met
         if not (
-            is_length_valid and
-            is_uppercase_valid and
-            is_lowercase_valid and
-            is_digit_valid and
-            is_special_char_valid
+                is_length_valid and
+                is_uppercase_valid and
+                is_lowercase_valid and
+                is_digit_valid and
+                is_special_char_valid
         ):
             return "Invalid password. Must meet the specified criteria.", 400
 
-        register_user_to_db(username, password)
-        return redirect("/")
+        register_user_to_db(username, password)  # Call register user to database with the username and password
+        return redirect("/")  # redirect to the login page
     else:
-        return render_template('register.html')
+        return render_template('register.html')  # render the registration page
 
 
 @app.route('/login', methods=["POST", "GET"])  # Route for user login
 def login():
-    if request.method == 'POST':
-        username = request.form['username']
+    if request.method == 'POST':   # When a "submit" (POST) request is made on the /login page
+        username = request.form['username']  # Get the username and password
         password = request.form['password']
         if check_user(username, password):  # Creates a new session for the user, then redirects them to the home page
-            session['username'] = username
-            return redirect("/home")
+            session['username'] = username  # Add username to the session
+            return redirect("/home")  # Go to the home page
         else:
-            return render_template('login-failed.html')
+            return render_template('login-failed.html')  # Go to login-failed page when their user doesn't exist
     else:
         return redirect("/")
 
@@ -144,7 +144,7 @@ def admin_approval_dashboard_route():
 @app.route('/logout')  # Logout route: logs the user out by clearing session
 def logout():
     session.clear()
-    return redirect("/")
+    return redirect("/")  # Redirect to the login page
 
 
 if __name__ == '__main__':
