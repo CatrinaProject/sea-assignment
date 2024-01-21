@@ -55,7 +55,7 @@ class AppTestCase(unittest.TestCase):
             'screen_size': '55 inches'
         })
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers['Location'], 'http://localhost/televisions')
+        self.assertEqual(response.headers['Location'], '/televisions')
 
     def test_add_record_with_bad_chars(self):
         response = self.app.post('/televisions/add', data={
@@ -81,12 +81,12 @@ class AppTestCase(unittest.TestCase):
             'screen_size': '65 inches'
         })
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers['Location'], 'http://localhost/televisions')
+        self.assertEqual(response.headers['Location'], '/televisions')
 
     def test_delete_record_as_regular(self):
         response = self.app.get('/admin/televisions/delete', query_string={'tv_id': 1})
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers['Location'], 'http://localhost/home')
+        self.assertEqual(response.headers['Location'], '/home')
 
     def test_update_record_as_admin(self):
         response = self.app.post('/login', data={'username': 'admin', 'password': 'Pass123?'}, follow_redirects=True)
@@ -100,14 +100,14 @@ class AppTestCase(unittest.TestCase):
             'screen_size': '65 inches'
         })
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers['Location'], 'http://localhost/televisions')
+        self.assertEqual(response.headers['Location'], '/televisions')
 
     def test_delete_record_as_admin(self):
         response = self.app.post('/login', data={'username': 'admin', 'password': 'Pass123?'}, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         response = self.app.get('/admin/televisions/delete', query_string={'tv_id': 1})
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers['Location'], 'http://localhost/televisions')
+        self.assertEqual(response.headers['Location'], '/televisions')
 
 
 # Create a test suite
