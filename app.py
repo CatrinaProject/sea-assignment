@@ -24,16 +24,6 @@ def check_admin_route():
             flash("Sorry, you must be an admin to perform this action. Please contact an admin.", "error")
             return redirect("/home")
 
-@app.before_request
-def check_session_timeout():
-    # Exclude the login route from session timeout check
-    if request.endpoint == 'login':
-        return
-
-    # When session times out, redirect the next request to the login page
-    if 'username' not in session:
-        return redirect(url_for('login'))
-
 
 @app.route("/")  # Main route: renders the login page
 def index():
