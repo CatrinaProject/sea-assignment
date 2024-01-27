@@ -12,6 +12,9 @@ from admin_dashboard import admin_dashboard
 app = Flask(__name__)
 app.secret_key = "ee3rs2"
 app.permanent_session_lifetime = timedelta(minutes=60)
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+
 
 
 @app.before_request  # Before a each request, check whether the page is a /admin route
