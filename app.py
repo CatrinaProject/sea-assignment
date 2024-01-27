@@ -3,7 +3,8 @@
 
 import re
 from flask import Flask, redirect, render_template, request, session, flash
-from helpers import register_user_to_db, check_user, is_admin
+from werkzeug.security import generate_password_hash
+from helpers import hash_password, register_user_to_db, check_user, is_admin
 from televisions import televisions, add_television_record, edit_television, update_television_record, delete_television
 from tests import tests, add_test_record, edit_tests, update_test_record, delete_test
 from admin_dashboard import admin_dashboard
@@ -57,8 +58,10 @@ def register():
                 is_special_char_valid
         ):
             return "Invalid password. Must meet the specified criteria.", 400
+        
+        hashed_password = hash_password(password)
 
-        register_user_to_db(username, password)  # Call register user to database with the username and password
+        register_user_to_db(username, hashed_password)  # Call register user to database with the username and hashed password
         return redirect("/")  # redirect to the login page
     else:
         return render_template('register.html')  # render the registration page
