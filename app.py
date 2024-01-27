@@ -2,8 +2,8 @@
 # and interactions with the database to ensure the proper functioning of the application's features.
 
 import re
-from flask import Flask, redirect, render_template, request, session, flash
-from werkzeug.security import generate_password_hash
+from datetime import timedelta
+from flask import Flask, redirect, render_template, request, session, flash, url_for
 from helpers import hash_password, register_user_to_db, check_user, is_admin
 from televisions import televisions, add_television_record, edit_television, update_television_record, delete_television
 from tests import tests, add_test_record, edit_tests, update_test_record, delete_test
@@ -11,6 +11,7 @@ from admin_dashboard import admin_dashboard
 
 app = Flask(__name__)
 app.secret_key = "ee3rs2"
+app.permanent_session_lifetime = timedelta(minutes=60)
 
 
 @app.before_request  # Before a each request, check whether the page is a /admin route
@@ -19,6 +20,16 @@ def check_admin_route():
         if not is_admin():  # If the session username is not an admin, flash the error message and redirect to home page
             flash("Sorry, you must be an admin to perform this action. Please contact an admin.", "error")
             return redirect("/home")
+
+@app.before_request
+def check_session_timeout():
+    # Exclude the login route from session timeout check
+    if request.endpoint == 'login':
+        return
+
+    # When session times out, redirect the next request to the login page
+    if 'username' not in session:
+        return redirect(url_for('login'))
 
 
 @app.route("/")  # Main route: renders the login page
