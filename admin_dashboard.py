@@ -12,20 +12,18 @@ def admin_dashboard():
 
             for username in selected_users:  # with each username in the list of selected users, update them to admin
                 # Update user_type to 'admin' and approved to 1 for the selected user(s)
-                cur.execute('UPDATE users SET user_type = ?, approved = ? WHERE username = ?',
-                            ('admin', 1, username))
+                cur.execute('UPDATE users SET is_admin = ? WHERE username = ?',
+                            (1, username))
 
             con.commit()
             con.close()
-        else:
-            return 'No users selected for approval.', 400
 
     con = sqlite3.connect('database.db')  # Connect to the database and get a list of admin and regular users
     cur = con.cursor()
-    cur.execute("SELECT * FROM users WHERE user_type = 'regular' AND approved = 0")  # Get all regular users
+    cur.execute("SELECT * FROM users WHERE is_admin = 0")  # Get all regular users
     pending_users = cur.fetchall()
 
-    cur.execute("SELECT * FROM users WHERE user_type = 'admin' AND approved = 1")  # Get all admin users
+    cur.execute("SELECT * FROM users WHERE is_admin = 1")  # Get all admin users
     admins = cur.fetchall()
 
     con.close()
