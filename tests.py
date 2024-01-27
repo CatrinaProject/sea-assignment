@@ -11,7 +11,8 @@ def extract_tests_form_values(test_request):  # Form a dictionary of values from
         'audio_test_type': test_request.form['audio_test_type'],
         'playback_type': test_request.form['playback_type'],
         'test_criteria': test_request.form['test_criteria'],
-        'test_parameters': test_request.form['test_parameters']
+        'test_parameters': test_request.form['test_parameters'],
+        'author_id': test_request.form['author_id']
     }
 
 
@@ -19,13 +20,24 @@ def validate_test_results(form_values):  # Pass the values in the dictionary int
     validation_result = validate_bad_chars(
         form_values['test_name'] + form_values['duration'] + form_values['region']
         + form_values['audio_test_type'] + form_values['playback_type'] + form_values['test_criteria']
-        + form_values['test_parameters'])
+        + form_values['test_parameters'] + form_values['author_id'])
     validate_duration = validate_decimal(form_values['duration'])
     if validation_result is not None:
         return validation_result  # Return the error message directly
     elif validate_duration is not None:
         return validate_duration
 
+def check_author_exists(author_id_from_request):
+    con = sqlite3.connect('database.db')
+    cur = con.cursor()
+    
+    # Return true/false whether the author_id exists. 
+    cur.execute("SELECT EXISTS(SELECT 1 FROM users WHERE id = ?) AS id_exists", (author_id_from_request,))
+    result = cur.fetchone()
+
+    con.close()
+
+    return result[0]
 
 def tests():
     con = sqlite3.connect('database.db')
@@ -44,18 +56,23 @@ def add_test_record():
 
         if validate_test_results(form_values) is not None:
             return validate_test_results(form_values)
+        
+        if check_author_exists(form_values['author_id']):
+            author_id = form_values['author_id']
+        else:
+            author_id = None
 
         # Insert new test record with parameters submitted by the user
         conn = sqlite3.connect('database.db')
         cur = conn.cursor()
         cur.execute('''
             INSERT INTO Tests (
-                        test_name, duration, region, audio_test_type, playback_type, test_criteria, test_parameters
+                        test_name, duration, region, audio_test_type, playback_type, test_criteria, test_parameters, author_id
                         )
-            VALUES (?, ?, ?, ?, ?, ?, ?) ''',
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?) ''',
                     (form_values['test_name'], form_values['duration'], form_values['region'],
                      form_values['audio_test_type'], form_values['playback_type'], form_values['test_criteria'],
-                     form_values['test_parameters']))
+                     form_values['test_parameters'], author_id))
 
         session['last_added_test_id'] = cur.lastrowid
 

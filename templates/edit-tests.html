@@ -24,6 +24,8 @@
         <input type="text" name="test_criteria" value="{{ test_criteria }}" required oninput="validateInput(this, 'save-button')"><br>
         <label for="test_parameters">Test Parameters:</label>
         <input type="text" name="test_parameters" value="{{ test_parameters }}" required oninput="validateInput(this, 'save-button')"><br>
+        <label for="author_id">Author ID:</label>
+        <input type="text" name="author_id" value="{{ author_id }}" required oninput="validateInput(this, 'save-button')"><br>
         <button type="submit" id="save-button">Save Changes</button>
     </form>
     {% endblock %}
