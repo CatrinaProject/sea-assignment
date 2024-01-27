@@ -1,6 +1,7 @@
 # Generates the sqlite tables (users, televisions, tests) and inserts some records for demonstration purposes
 
 import sqlite3
+from helpers import hash_password
 
 conn = sqlite3.connect('database.db')
 c = conn.cursor()
@@ -10,10 +11,10 @@ c = conn.cursor()
 c.execute('''
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT NOT NULL UNIQUE,
+        username TEXT NOT NULL CHECK(length(username) <= 50),
         password TEXT NOT NULL,
-        approved INTEGER DEFAULT 0,
-        user_type TEXT NOT NULL
+        is_admin INTEGER DEFAULT 0,
+        UNIQUE(username)
     )
 ''')
 
@@ -21,20 +22,20 @@ c.execute('''
 # Password: Pass123?
 
 # Inserting a (pre-made) Admin record to login with.
-user_data = {'username': 'admin', 'password': 'Pass123?', 'user_type': 'admin', 'approved': 1}
-c.execute('''INSERT INTO users(username, password, user_type, approved) VALUES (?, ?, ?, ?)''',
-          (user_data['username'], user_data['password'], user_data['user_type'], user_data['approved']))
+user_data = {'username': 'admin', 'password': hash_password("Pass123?"), 'is_admin': 1}
+c.execute('''INSERT INTO users(username, password, is_admin) VALUES (?, ?, ?)''',
+          (user_data['username'], user_data['password'], user_data['is_admin']))
 
 # Create the 'Televisions' table
 # Stores a list of Television records for engineers to view television specifications
 c.execute('''
     CREATE TABLE IF NOT EXISTS Televisions (
         tv_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        brand TEXT NOT NULL,
-        audio TEXT NOT NULL,
-        resolution TEXT NOT NULL,
-        refresh_rate TEXT NOT NULL,
-        screen_size TEXT NOT NULL
+        brand TEXT NOT NULL CHECK(length(brand) <= 50),
+        audio TEXT NOT NULL CHECK(length(audio) <= 50),
+        resolution TEXT NOT NULL CHECK(length(resolution) <= 50),
+        refresh_rate TEXT NOT NULL CHECK(length(refresh_rate) <= 50),
+        screen_size TEXT NOT NULL CHECK(length(screen_size) <= 50)
     )
 ''')
           
@@ -43,13 +44,15 @@ c.execute('''
 c.execute('''
     CREATE TABLE IF NOT EXISTS Tests (
         test_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        test_name TEXT NOT NULL,
+        test_name TEXT NOT NULL CHECK(length(test_name) <= 50),
         duration DECIMAL(5, 2) NOT NULL,
-        region TEXT NOT NULL,
-        audio_test_type TEXT,
-        playback_type TEXT,
-        test_criteria TEXT,
-        test_parameters TEXT
+        region TEXT NOT NULL CHECK(length(region) <= 50),
+        audio_test_type TEXT CHECK(length(audio_test_type) <= 50),
+        playback_type TEXT CHECK(length(playback_type) <= 50), 
+        test_criteria TEXT CHECK(length(test_criteria) <= 100),
+        test_parameters TEXT CHECK(length(test_parameters) <= 100),
+        author_id INTEGER,
+        FOREIGN KEY (author_id) REFERENCES users(id)
     )
 ''')
           
