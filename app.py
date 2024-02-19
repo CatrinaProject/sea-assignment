@@ -5,7 +5,7 @@ import re
 from datetime import timedelta
 from logger.create_logger import create_logger
 from flask import Flask, redirect, render_template, request, session, flash
-from helpers import hash_password, register_user_to_db, check_user, is_admin
+from helpers import hash_password, register_user_to_db, check_user, is_admin, validate_username, validate_password
 from televisions import televisions, add_television_record, edit_television, update_television_record, delete_television
 from tests import tests, add_test_record, edit_tests, update_test_record, delete_test
 from admin_dashboard import admin_dashboard
@@ -36,36 +36,14 @@ def index():
 @app.route('/register', methods=["POST", "GET"])  # Route for user registration
 def register():
     if request.method == 'POST':  # When a "submit" (POST) request is made on the /register page
-        username = request.form['username']  # Get the username and password
-        password = request.form['password']
+        username = validate_username(request.form['username'])  # Get the username and password
+        password = validate_password(request.form['password'])
 
-        # Server-side validation for username using regex, must be alphabetical and less than 50 characters
-        if not re.match(r"^[a-zA-Z]{5,}$", username):
-            return "Invalid username. Must meet the specified criteria.", 400
-
-        # Server-side validation for password using regex
-        length_regex = r".{5,}"
-        uppercase_regex = r"[A-Z]"
-        lowercase_regex = r"[a-z]"
-        digit_regex = r"\d"
-        special_char_regex = r"[!@#$%^&*()_+{}\[\]:;<>,.?~\-]"
-
-        is_length_valid = re.search(length_regex, password)
-        is_uppercase_valid = re.search(uppercase_regex, password)
-        is_lowercase_valid = re.search(lowercase_regex, password)
-        is_digit_valid = re.search(digit_regex, password)
-        is_special_char_valid = re.search(special_char_regex, password)
-
-        # Check if all requirements are met
-        if not (
-                is_length_valid and
-                is_uppercase_valid and
-                is_lowercase_valid and
-                is_digit_valid and
-                is_special_char_valid
-        ):
-            return "Invalid password. Must meet the specified criteria.", 400
-        
+        if username is not None:
+            return username
+        elif password is not None:
+            return password
+                
         hashed_password = hash_password(password)
 
         register_user_to_db(username, hashed_password)  # Call register user to database with the username and hashed password
@@ -79,8 +57,14 @@ def register():
 @app.route('/login', methods=["POST", "GET"])  # Route for user login
 def login():
     if request.method == 'POST':   # When a "submit" (POST) request is made on the /login page
-        username = request.form['username']  # Get the username and password
-        password = request.form['password']
+        username = validate_username(request.form['username'])  # Get the username and password
+        password = validate_password(request.form['password'])
+
+        if username is not None:
+            return username
+        elif password is not None:
+            return password
+
         if check_user(username, password):  # Creates a new session for the user, then redirects them to the home page
             session['username'] = username  # Add username to the session
             logger.info('Login succeeded, processing home page')
