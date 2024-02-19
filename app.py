@@ -72,7 +72,7 @@ def register():
         logger.info("Registered a new user to the database")
         return redirect("/")  # redirect to the login page
     else:
-        logger.error('Unable tp register new user, redirecting back to Registration')
+        logger.error('Unable to register new user, redirecting back to Registration')
         return render_template('register.html')  # render the registration page
 
 
