@@ -3,7 +3,7 @@
 
 import re
 from datetime import timedelta
-import logging
+from logger.create_logger import create_logger
 from flask import Flask, redirect, render_template, request, session, flash
 from helpers import hash_password, register_user_to_db, check_user, is_admin
 from televisions import televisions, add_television_record, edit_television, update_television_record, delete_television
@@ -15,15 +15,6 @@ app.secret_key = "ee3rs2"
 app.permanent_session_lifetime = timedelta(minutes=60)
 app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
-
-def create_logger():
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-    file_handler = logging.FileHandler('app.log')
-    file_handler.setFormatter(formatter)
-    logger.addHandler(file_handler)
-    return logger
 
 logger = create_logger()
 
