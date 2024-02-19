@@ -1,7 +1,10 @@
 import sqlite3
 import re
+from logger.create_logger import create_logger
 from flask import session
 from werkzeug.security import generate_password_hash, check_password_hash
+
+logger = create_logger()
 
 def register_user_to_db(username, hashed_password):  # Registers new users to the database as a 'non-approved' regular user
     con = sqlite3.connect('database.db')
@@ -26,13 +29,12 @@ def check_user(username, password):
         password_match = check_password_hash(stored_hashed_password[0], password)
 
         if password_match:
-            # Both username and password are correct
             return True
         else:
-            # Password is incorrect
+            logger.error("Password entered by user: %s was incorrect", username)
             return False
     else:
-        # Username does not exist
+        logger.error("Username: %s does not exist", username)
         return False
 
 
@@ -55,6 +57,7 @@ def validate_bad_chars(params):
 
     # Server-side validation using regex, must not contain special characters
     if not re.match(r'^[a-zA-Z0-9\s\-.,\']+?$', params):
+        logger.error("User input failed to pass regex validation")
         return "Invalid characters or length detected.", 400
 
 
@@ -62,6 +65,7 @@ def validate_decimal(duration):
     # Validate duration as a decimal with up to 2 decimal places and a total of 5 digits
     # Although this is managed in front-end scripting it adds an extra layer of protection on the server side.
     if not re.match(r'^\d{1,5}(\.\d{1,2})?$', duration):
+        logger.error("User input failed to pass Decimal regex validation")
         return "Invalid duration value.", 400
 
 

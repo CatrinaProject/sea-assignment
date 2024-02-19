@@ -11,6 +11,8 @@ def create_logger():
     # Define log format
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
     stream_handler.setFormatter(formatter)
-    logger.addHandler(stream_handler)
+
+    if not logger.handlers:
+        logger.addHandler(stream_handler)
     
     return logger
