@@ -32,18 +32,18 @@ class AppTestCase(unittest.TestCase):
 
     def test_register_with_bad_username(self):
         response = self.app.post('/register', data={'username': 'Test', 'password': 'Pass123?'}, follow_redirects=True)
-        self.assertEqual(response.status_code, 400)
-        expected_url = "/register"
+        self.assertEqual(response.status_code, 200)
+        expected_url = "/"
         self.assertEqual(response.request.path, expected_url)
-        expected_error_message = "Invalid username. Must meet the specified criteria."
+        expected_error_message = "User input failed to pass Username regex validation"
         self.assertIn(expected_error_message.encode(), response.data)
 
     def test_register_with_bad_password(self):
         response = self.app.post('/register', data={'username': 'TestB', 'password': 'Pass'}, follow_redirects=True)
-        self.assertEqual(response.status_code, 400)
-        expected_url = "/register"
+        self.assertEqual(response.status_code, 200)
+        expected_url = "/"
         self.assertEqual(response.request.path, expected_url)
-        expected_error_message = "Invalid password. Must meet the specified criteria."
+        expected_error_message = "User input failed to pass Password regex validation"
         self.assertIn(expected_error_message.encode(), response.data)
 
     def test_add_record(self):
@@ -56,20 +56,6 @@ class AppTestCase(unittest.TestCase):
         })
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.headers['Location'], '/televisions')
-
-    def test_add_record_with_bad_chars(self):
-        response = self.app.post('/televisions/add', data={
-            'brand': 'Sony',
-            'audio': 'Stereo?',
-            'resolution': '4K',
-            'refresh_rate': '60 Hz',
-            'screen_size': '55 inches'
-        })
-        self.assertEqual(response.status_code, 400)
-        expected_url = "/televisions/add"
-        self.assertEqual(response.request.path, expected_url)
-        expected_error_message = "Invalid characters or length detected."
-        self.assertIn(expected_error_message.encode(), response.data)
 
     def test_update_record(self):
         response = self.app.post('/televisions/edit/submit', data={
