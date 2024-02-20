@@ -50,11 +50,13 @@ def is_admin():  # Checks whether the user is an admin
             return True
     return False
 
+
 def validate_username(username):
     # Server-side validation for username using regex, must be alphabetical and less than 50 characters
     if not re.match(r"^[a-zA-Z]{5,}$", username):
         logger.error("User input failed to pass Username regex validation")
         return "Invalid username. Must meet the specified criteria.", 400
+
 
 def validate_password(password):
     # Server-side validation for password using regex
@@ -80,7 +82,8 @@ def validate_password(password):
     ):
         logger.error("User input failed to pass Password regex validation")
         return "Invalid password. Must meet the specified criteria.", 400
- 
+
+
 def validate_bad_chars(params):
     # Validate input using regex to prevent inappropriate characters.
     # Although this is managed in front-end scripting it adds an extra layer of protection on the server side.

@@ -55,7 +55,7 @@ class AppTestCase(unittest.TestCase):
             'screen_size': '55 inches'
         })
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers['Location'], '/televisions')
+        self.assertEqual(response.headers['Location'], 'http://localhost/televisions')
 
     def test_add_record_with_bad_chars(self):
         response = self.app.post('/televisions/add', data={
@@ -71,9 +71,9 @@ class AppTestCase(unittest.TestCase):
         expected_error_message = "Invalid characters or length detected."
         self.assertIn(expected_error_message.encode(), response.data)
 
-    def test_update_record_as_regular_in_session(self):
+    def test_update_record(self):
         response = self.app.post('/televisions/edit/submit', data={
-            'tv_id': 1,
+            'tv_id': 2,
             'brand': 'LG',
             'audio': 'Dolby Digital',
             'resolution': '1080p',
@@ -81,12 +81,7 @@ class AppTestCase(unittest.TestCase):
             'screen_size': '65 inches'
         })
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers['Location'], '/televisions')
-
-    def test_delete_record_as_regular(self):
-        response = self.app.get('/admin/televisions/delete', query_string={'tv_id': 1})
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers['Location'], '/home')
+        self.assertEqual(response.headers['Location'], 'http://localhost/televisions')
 
     def test_update_record_as_admin(self):
         response = self.app.post('/login', data={'username': 'admin', 'password': 'Pass123?'}, follow_redirects=True)
@@ -100,15 +95,34 @@ class AppTestCase(unittest.TestCase):
             'screen_size': '65 inches'
         })
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers['Location'], '/televisions')
+        self.assertEqual(response.headers['Location'], 'http://localhost/televisions')
+
+    def test_delete_record(self):
+        response = self.app.get('/admin/televisions/delete', query_string={'tv_id': 1})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers['Location'], 'http://localhost/home')
 
     def test_delete_record_as_admin(self):
         response = self.app.post('/login', data={'username': 'admin', 'password': 'Pass123?'}, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         response = self.app.get('/admin/televisions/delete', query_string={'tv_id': 1})
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers['Location'], '/televisions')
+        self.assertEqual(response.headers['Location'], 'http://localhost/televisions')
 
+    def test_admin_dashboard_as_admin(self):
+        response = self.app.post('/login', data={'username': 'admin', 'password': 'Pass123?'}, follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        response = self.app.post('/admin/dashboard')
+        self.assertEqual(response.status_code, 200)
+        expected_url = "/admin/dashboard"
+        self.assertEqual(response.request.path, expected_url)
+        expected_text = "Admin Approvals"
+        self.assertIn(expected_text.encode(), response.data)
+
+    def test_admin_dashboard_as_regular(self):
+        response = self.app.post('/admin/dashboard')
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers['Location'], 'http://localhost/home')
 
 # Create a test suite
 test_suite = unittest.TestLoader().loadTestsFromTestCase(AppTestCase)

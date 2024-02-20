@@ -36,13 +36,14 @@ def index():
 @app.route('/register', methods=["POST", "GET"])  # Route for user registration
 def register():
     if request.method == 'POST':  # When a "submit" (POST) request is made on the /register page
-        username = validate_username(request.form['username'])  # Get the username and password
-        password = validate_password(request.form['password'])
+        username = request.form['username']  # Get the username and password
+        password = request.form['password']
 
-        if username is not None:
-            return username
-        elif password is not None:
-            return password
+        valid_username = validate_username(username)
+        valid_password = validate_password(password)
+
+        if valid_username or valid_password:
+            return valid_username or valid_password
                 
         hashed_password = hash_password(password)
 
@@ -57,13 +58,14 @@ def register():
 @app.route('/login', methods=["POST", "GET"])  # Route for user login
 def login():
     if request.method == 'POST':   # When a "submit" (POST) request is made on the /login page
-        username = validate_username(request.form['username'])  # Get the username and password
-        password = validate_password(request.form['password'])
+        username = request.form['username']  # Get the username and password
+        password = request.form['password']
 
-        if username is not None:
-            return username
-        elif password is not None:
-            return password
+        valid_username = validate_username(username)
+        valid_password = validate_password(password)
+
+        if valid_username or valid_password:
+            return valid_username or valid_password
 
         if check_user(username, password):  # Creates a new session for the user, then redirects them to the home page
             session['username'] = username  # Add username to the session
