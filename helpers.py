@@ -1,7 +1,7 @@
 import sqlite3
 import re
 from logger.create_logger import create_logger
-from flask import session
+from flask import session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 
 logger = create_logger()
@@ -54,7 +54,9 @@ def is_admin():  # Checks whether the user is an admin
 def validate_username(username):
     # Server-side validation for username using regex, must be alphabetical and less than 50 characters
     if not re.match(r"^[a-zA-Z]{5,}$", username):
-        logger.error("User input failed to pass Username regex validation")
+        message = "User input failed to pass Username regex validation"
+        logger.error(message)
+        flash(message, "error")
         return "Invalid username. Must meet the specified criteria.", 400
 
 
@@ -80,7 +82,9 @@ def validate_password(password):
             is_digit_valid and
             is_special_char_valid
     ):
-        logger.error("User input failed to pass Password regex validation")
+        message = "User input failed to pass Password regex validation"
+        logger.error(message)
+        flash(message, "error")
         return "Invalid password. Must meet the specified criteria.", 400
 
 
@@ -90,7 +94,9 @@ def validate_bad_chars(params):
 
     # Server-side validation using regex, must not contain special characters
     if not re.match(r'^[a-zA-Z0-9\s\-.,\']+?$', params):
-        logger.error("User input failed to pass regex validation")
+        message = "User input failed to pass regex validation"
+        logger.error(message)
+        flash(message, "error")
         return "Invalid characters or length detected.", 400
 
 
@@ -98,7 +104,9 @@ def validate_decimal(duration):
     # Validate duration as a decimal with up to 2 decimal places and a total of 5 digits
     # Although this is managed in front-end scripting it adds an extra layer of protection on the server side.
     if not re.match(r'^\d{1,5}(\.\d{1,2})?$', duration):
-        logger.error("User input failed to pass Decimal regex validation")
+        message = "User input failed to pass Decimal regex validation"
+        logger.error(message)
+        flash(message, "error")
         return "Invalid duration value.", 400
 
 

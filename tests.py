@@ -23,9 +23,10 @@ def validate_test_results(form_values):  # Pass the values in the dictionary int
         + form_values['test_parameters'] + form_values['author_id'])
     validate_duration = validate_decimal(form_values['duration'])
     if validation_result is not None:
-        return validation_result  # Return the error message directly
+        return redirect("/tests")  # Return the error message directly
     elif validate_duration is not None:
-        return validate_duration
+        return redirect("/tests")
+
 
 def check_author_exists(author_id_from_request):
     con = sqlite3.connect('database.db')

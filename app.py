@@ -39,11 +39,8 @@ def register():
         username = request.form['username']  # Get the username and password
         password = request.form['password']
 
-        valid_username = validate_username(username)
-        valid_password = validate_password(password)
-
-        if valid_username or valid_password:
-            return valid_username or valid_password
+        if validate_username(username) or validate_password(password):
+            return redirect("/")
                 
         hashed_password = hash_password(password)
 
@@ -51,7 +48,9 @@ def register():
         logger.info("Registered a new user to the database")
         return redirect("/")  # redirect to the login page
     else:
-        logger.error('Unable to register new user, redirecting back to Registration')
+        message = "Unable to register new user, redirecting back to Registration"
+        logger.error(message)
+        flash(message, "error")
         return render_template('register.html')  # render the registration page
 
 
@@ -61,18 +60,17 @@ def login():
         username = request.form['username']  # Get the username and password
         password = request.form['password']
 
-        valid_username = validate_username(username)
-        valid_password = validate_password(password)
-
-        if valid_username or valid_password:
-            return valid_username or valid_password
+        if validate_username(username) or validate_password(password):
+            return redirect("/")
 
         if check_user(username, password):  # Creates a new session for the user, then redirects them to the home page
             session['username'] = username  # Add username to the session
             logger.info('Login succeeded, processing home page')
             return redirect("/home")  # Go to the home page
         else:
-            logger.error('Could not login user: %s, as username or password was invalid, redirecting to login failed page', username)
+            message = f'Could not login user: {username}, as username or password was invalid, redirecting to login failed page'
+            logger.error(message)
+            flash(message, "error")
             return render_template('login-failed.html')  # Go to login-failed page when their user doesn't exist
     else:
         return redirect("/")
@@ -83,7 +81,9 @@ def home():
     if 'username' in session:
         return render_template('home.html', username=session['username'])
     else:
-        logger.error('User not in session, redirecting to login failed page')
+        message = "User not in session, redirecting to login failed page"
+        logger.error(message)
+        flash(message, "error")
         return render_template('login-failed.html')
 
 

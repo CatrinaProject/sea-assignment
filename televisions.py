@@ -19,7 +19,7 @@ def validate_television_results(form_values):  # Pass the values in the dictiona
                                            form_values['screen_size'])
 
     if validation_result is not None:
-        return validation_result  # Return the error message directly
+        return redirect('/televisions')  # Redirect page and show error
 
 
 def televisions():
