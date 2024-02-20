@@ -85,6 +85,6 @@ The examiner can log in as an admin user with these credentials:
 Or the examiner can register a new account, by default this is a regular user, and they would need to be approved by an admin using the Approval Dashboard.
 
 ## Usage
-* Access the application by opening a web browser and navigating to https://catrinaproject1.pythonanywhere.com/
+* Access the application by opening a web browser and navigating to https://catrina-sedo-project.onrender.com/
 * Register for a new user account or log in as admin with the credentials in [# Admin Login](#admin-login)
 * Use the application to manage television and test records, including adding, editing, and deleting (admin only) records.
