@@ -82,7 +82,7 @@ The examiner can log in as an admin user with these credentials:
 * Username: `admin` 
 * Password: `Pass123?`
 
-Or the examiner can register a new account, by default this is a regular user and they would need to be approved by an admin using the Approval Dashboard.
+Or the examiner can register a new account, by default this is a regular user, and they would need to be approved by an admin using the Approval Dashboard.
 
 ## Usage
 * Access the application by opening a web browser and navigating to https://catrinaproject1.pythonanywhere.com/
