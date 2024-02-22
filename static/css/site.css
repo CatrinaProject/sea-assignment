@@ -2,7 +2,7 @@
 
 /* Reset some default margins and paddings */
 body, h1, h2, h3, h4, h5, h6, p {
-    margin: 0;
+    margin: 10;
     padding: 0;
 }
 
@@ -15,7 +15,7 @@ body {
 /* Style the container to add some padding and center content */
 .container {
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 50 auto;
     padding: 20px 20px 20px 40px; /* Adding 40px left padding */
 }
 
@@ -23,7 +23,6 @@ body {
 header {
     background-color: #333;
     color: white;
-    padding: 10px;
     text-align: center;
 }
 
@@ -51,17 +50,17 @@ a:hover {
 }
 
 /* Style buttons */
-.button {
+button {
     background-color: #007bff;
     color: white;
-    padding: 10px 20px;
+    padding: 5px 10px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
 }
 
-.button:hover {
-    background-color: #0056b3;
+button:hover {
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
 }
 
 .error {
