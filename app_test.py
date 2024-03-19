@@ -13,7 +13,7 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         expected_url = "/home"
         self.assertEqual(response.request.path, expected_url)
-        expected_text = "Welcome, " + "admin"
+        expected_text = "Television and Tests Management Service"
         self.assertIn(expected_text.encode(), response.data)
 
     def test_login_unregistered_user(self):
