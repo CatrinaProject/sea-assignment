@@ -24,12 +24,10 @@ def check_admin_route():
         if not is_admin():  # If the session username is not an admin, flash the error message and redirect to home page
             flash("Sorry, you must be an admin to perform this action. Please contact an admin.", "error")
             return redirect("/home")
+        
         if 'ip_address' in session:
             current_ip_address = clean_ip_address(request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr))
-            
-            logger.info(f"ip_stored_in_session: {session['ip_address']}")
-            logger.info(f"ip_address_the_new_one_like_rn: {current_ip_address}")
-
+            # Check if the IP address in the session matches the current IP address. If not, redirect to login page.
             if session['ip_address'] != current_ip_address:
                 flash("Sorry, you must login again. Your IP address has changed.", "error")
                 return redirect("/")
@@ -73,7 +71,6 @@ def login():
         if check_user(username, password):  # Creates a new session for the user, then redirects them to the home page
             session['username'] = username  # Add username to the session
             session['ip_address'] = clean_ip_address(request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)) # Add IP address to the session
-            logger.info(f"ip_address_in_session stored from login: {session['ip_address']}")
             logger.info('Login succeeded, processing home page')
             return redirect("/home")  # Go to the home page
         else:

@@ -7,8 +7,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 logger = create_logger()
 
 def clean_ip_address(ip_addresses_from_environment):
-    ip_address = str(ip_addresses_from_environment.split(', ')[0].strip())
-    dot_index = ip_address.rfind('.')
+    ip_address = str(ip_addresses_from_environment.split(', ')[0].strip()) # Split the first ip address from the set of addresses
+    dot_index = ip_address.rfind('.')  # Find the index of the last dot in the ip address string (to remove the port number)
     
     if dot_index != -1:
         ip_address = ip_address[:dot_index]
