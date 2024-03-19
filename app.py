@@ -25,11 +25,12 @@ def check_admin_route():
             flash("Sorry, you must be an admin to perform this action. Please contact an admin.", "error")
             return redirect("/home")
         if 'ip_address' in session:
-            ip_address_in_session = session['ip_address']
-            ip_address = request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
-            current_ip_address = clean_ip_address(ip_address)
+            current_ip_address = clean_ip_address(request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr))
+            
+            logger.info("ip_stored_in_session: ", session['ip_address'])
+            logger.info("ip_address_the_new_one_like_rn: ", current_ip_address)
 
-            if ip_address_in_session != current_ip_address:
+            if session['ip_address'] != current_ip_address:
                 flash("Sorry, you must login again. Your IP address has changed.", "error")
                 return redirect("/")
         else:
@@ -71,8 +72,8 @@ def login():
 
         if check_user(username, password):  # Creates a new session for the user, then redirects them to the home page
             session['username'] = username  # Add username to the session
-            ip_address = request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
-            session['ip_address'] = clean_ip_address(ip_address) # Add IP address to the session
+            session['ip_address'] = clean_ip_address(request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)) # Add IP address to the session
+            logger.info("ip_address_in_session stored from login: ", session['ip_address'])
             logger.info('Login succeeded, processing home page')
             return redirect("/home")  # Go to the home page
         else:
