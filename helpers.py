@@ -6,6 +6,18 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 logger = create_logger()
 
+def clean_ip_address(ip_address):
+    dot_index = ip_address.rfind('.')
+    
+    if dot_index != -1:
+        ip_address = ip_address[:dot_index]
+    
+    return ip_address
+
+def get_ip_address(request):
+    request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
+
+
 def register_user_to_db(username, hashed_password):  # Registers new users to the database as a 'non-approved' regular user
     con = sqlite3.connect('database.db')
     cur = con.cursor()  # Connect to the database and insert a new record with username and password provided

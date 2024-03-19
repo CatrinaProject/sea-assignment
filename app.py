@@ -2,9 +2,9 @@
 # and interactions with the database to ensure the proper functioning of the application's features.
 
 from datetime import timedelta
-from logger.create_logger import create_logger
 from flask import Flask, redirect, render_template, request, session, flash
-from helpers import hash_password, register_user_to_db, check_user, is_admin, validate_username, validate_password
+from logger.create_logger import create_logger
+from helpers import hash_password, register_user_to_db, check_user, is_admin, get_ip_address, clean_ip_address, validate_username, validate_password
 from televisions import televisions, add_television_record, edit_television, update_television_record, delete_television
 from tests import tests, add_test_record, edit_tests, update_test_record, delete_test
 from admin_dashboard import admin_dashboard
@@ -24,7 +24,14 @@ def check_admin_route():
         if not is_admin():  # If the session username is not an admin, flash the error message and redirect to home page
             flash("Sorry, you must be an admin to perform this action. Please contact an admin.", "error")
             return redirect("/home")
+        if 'ip_address' in session:
+            ip_address_in_session = session['ip_address']
+            ip_address = request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
+            current_ip_address = clean_ip_address(ip_address)
 
+            if ip_address_in_session != current_ip_address:
+                flash("Sorry, you must login again. Your IP address has changed.", "error")
+                return redirect("/")
 
 @app.route("/")  # Main route: renders the login page
 def index():
@@ -61,6 +68,8 @@ def login():
 
         if check_user(username, password):  # Creates a new session for the user, then redirects them to the home page
             session['username'] = username  # Add username to the session
+            ip_address = request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
+            session['ip_address'] = clean_ip_address(ip_address) # Add IP address to the session
             logger.info('Login succeeded, processing home page')
             return redirect("/home")  # Go to the home page
         else:
