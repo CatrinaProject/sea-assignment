@@ -4,7 +4,7 @@
 from datetime import timedelta
 from flask import Flask, redirect, render_template, request, session, flash
 from logger.create_logger import create_logger
-from helpers import hash_password, register_user_to_db, check_user, is_admin, get_ip_address, clean_ip_address, validate_username, validate_password
+from helpers import hash_password, register_user_to_db, check_user, is_admin, clean_ip_address, validate_username, validate_password
 from televisions import televisions, add_television_record, edit_television, update_television_record, delete_television
 from tests import tests, add_test_record, edit_tests, update_test_record, delete_test
 from admin_dashboard import admin_dashboard
