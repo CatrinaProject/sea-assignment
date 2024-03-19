@@ -32,6 +32,9 @@ def check_admin_route():
             if ip_address_in_session != current_ip_address:
                 flash("Sorry, you must login again. Your IP address has changed.", "error")
                 return redirect("/")
+        else:
+            flash("Sorry, you must login again. No IP address found. ", "error")
+            return redirect("/")
 
 @app.route("/")  # Main route: renders the login page
 def index():
