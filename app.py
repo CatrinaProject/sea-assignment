@@ -1,7 +1,6 @@
 # app.py serves as the backend of the web application, handling routing, data processing,
 # and interactions with the database to ensure the proper functioning of the application's features.
 
-import re
 from datetime import timedelta
 from logger.create_logger import create_logger
 from flask import Flask, redirect, render_template, request, session, flash
@@ -21,8 +20,8 @@ logger = create_logger()
 
 @app.before_request  # Before a each request, check whether the page is a /admin route
 def check_admin_route():
-    if request.path.startswith('/admin'):  # If /admin routes are clicked on the check_if_admin route.
-        if not is_admin():  # If the session username is not an admin, flash the error message and redirect to home page
+    if request.path.startswith('/admin'):  # If /admin routes are clicked on the check_if_admin route.        
+        if not is_admin() or session['session_token'] != request.cookies.get('session'):  # If the session username is not an admin, flash the error message and redirect to home page
             flash("Sorry, you must be an admin to perform this action. Please contact an admin.", "error")
             return redirect("/home")
 
@@ -76,7 +75,8 @@ def login():
 @app.route('/home', methods=['POST', "GET"])  # Home route: displays the user's home page after logging in
 def home():
     if 'username' in session:
-        return render_template('home.html', username=session['username'])
+        session['session_token'] = request.cookies.get('session')
+        return render_template('home.html')
     else:
         message = "User not in session, redirecting to login failed page"
         logger.error(message)
