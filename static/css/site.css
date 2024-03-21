@@ -64,6 +64,11 @@ button:hover {
     font-weight: 700;
 }
 
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .error {
     color: red
 }

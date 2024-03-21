@@ -27,10 +27,6 @@ def check_admin_route():
         
         if 'ip_address' in session:
             current_ip_address = clean_ip_address(request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr))
-
-            logger.info(f"[video-demo-only-log] IP ADDRESS STORED IN SESSION: {session['ip_address']}")
-            logger.info(f"[video-demo-only-log] IP ADDRESS FROM USER:{current_ip_address}")
-            
             # Check if the IP address in the session matches the current IP address. If not, redirect to login page.
             if session['ip_address'] != current_ip_address:
                 flash("Sorry, you must login again. Your IP address has changed.", "error")
