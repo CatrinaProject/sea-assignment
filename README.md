@@ -1,5 +1,7 @@
 ## Table of Contents
 * [Description](#description)
+* [Admin Login](#admin-login)
+* [Website](#usage)
 * [Functionality](#functionality)
 * [Features](#features)
   * [Validation](#validation)
@@ -13,6 +15,19 @@
 ## Description
 The Television and Tests Management Web Application is a Flask-based web application that allows users to manage a database of television and test records. Users can view, add, edit, and delete records, and perform user registration and login. The application also includes both client-side and server-side validation to ensure data integrity and security.
 The intended use of the application is for developers to keep track of television specifications and test case criteria.
+
+## Admin Login
+The examiner can log in as an admin user with these credentials:
+* Username: `admin` 
+* Password: `Pass123?`
+
+Or the examiner can register a new account, by default this is a regular user, and they would need to be approved by an admin using the Approval Dashboard.
+
+## Usage
+* Access the application by opening a web browser and navigating to https://catrina-sedo-project.onrender.com/
+* Register for a new user account or log in as admin with the credentials in [# Admin Login](#admin-login)
+* Use the application to manage television and test records, including adding, editing, and deleting (admin only) records.
+
 
 ## Functionality
 * **User Registration and Login:** Users can register for an account and log in to access the application's features.
@@ -65,6 +80,11 @@ _Marking each feature as a CRUD operation_
 * The database schema includes a `users` table for storing regular and admin user information, a `televisions` table for storing television records and a `tests` table for storing test records.
 * SQLite is serverless and uses a local file (`database.db`) for data storage.
 
+* The Television and Tests Management service allows users to manage a database of television requirements and test records. This database includes a foreign key between the users and Tests tables which allows engineers to be able to add the test author ID for their test cases.
+
+Television and Test Management Database Model
+ ![image](https://github.com/CatrinaProject/sea-assignment/assets/95765757/4335e760-02c9-4fdb-bd9c-5de370f0200d)
+
 ## Technologies
 * Flask: A micro web framework for Python.
 * SQLite: A lightweight, serverless database engine.
@@ -76,15 +96,3 @@ _Marking each feature as a CRUD operation_
 1. Clone this repository to your local machine.
 2. Create a virtual environment for the project (optional but recommended).
 3. Run the Flask application by executing `python app.py` from the project's root directory.
-
-#### Admin Login
-The examiner can log in as an admin user with these credentials:
-* Username: `admin` 
-* Password: `Pass123?`
-
-Or the examiner can register a new account, by default this is a regular user, and they would need to be approved by an admin using the Approval Dashboard.
-
-## Usage
-* Access the application by opening a web browser and navigating to https://catrina-sedo-project.onrender.com/
-* Register for a new user account or log in as admin with the credentials in [# Admin Login](#admin-login)
-* Use the application to manage television and test records, including adding, editing, and deleting (admin only) records.
